@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Menu Construction Sheet</title>
+  <style>
+    /* ============================================================
+     COLOR PALETTE  (edit these to retheme the whole sheet)
+     ============================================================ */
+    :root {
+      --header-bar: #C9A12C;
+      --header-color: #fff;
+      --section-header-band: #ebe9e5;
+      --panel: #f5f8f8;
+      --ink: #262626;
+      --boxborder: #3A3A3A;
+      --line: #C9A227;
+      --header-barlabel: #9C7A18;
+      --help-text: #9A8E6A;
+      --padding: 32px;
+    }
+
+    /* ============================================================
+     PAGE SHELL
+     ============================================================ */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #e9e7e0;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      color: var(--ink);
+      font-size: 12px;
+    }
+
+    .sheet {
+      width: 11in;
+      min-height: 17in;
+      margin: 18px auto;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+      padding: 0;
+    }
+
+    .body {
+      padding: var(--padding);
+    }
+
+    /* ============================================================
+     TITLE BAR
+     ============================================================ */
+    .title {
+      background: var(--header-bar);
+      color: var(--header-color);
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      padding: var(--padding);
+      padding-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* ============================================================
+     SECTION HEADER BAND
+     ============================================================ */
+    .band {
+      background: var(--section-header-band);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      margin: 14px 0 0;
+    }
+
+    /* ============================================================
+     HEADER BLOCK  (Job Number / Description / Property / Designer)
+     ============================================================ */
+    .header-panel {
+      background: var(--section-header-band);
+      padding: 14px 16px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .lab {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--ink);
+    }
+
+    /* boxed fillable field */
+    .box {
+      border: 1.5px solid var(--boxborder);
+      background: #fff;
+      height: 26px;
+      padding: 3px 7px;
+      font: inherit;
+      font-size: 12px;
+      border-radius: 2px;
+      transition: border-color 0.15s ease;
+    }
+
+    .box:hover {
+      border-color: var(--header-bar);
+    }
+
+    .box:focus {
+      outline: none;
+      border-color: var(--header-bar);
+      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+    }
+
+    /* ============================================================
+     SECTION CONTENT  (Size Specs, etc.)
+     ============================================================ */
+    .section {
+      padding: 10px 0 13px;
+    }
+
+    .frow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      margin: 6px 0;
+    }
+
+
+
+    .hint {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .arrow {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* divider line within a section */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 10px 0;
+    }
+
+    /* checkbox option */
+    .copt {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-style: italic;
+      font-size: 11.5px;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      cursor: pointer;
+      color: var(--ink);
+      padding: 4px 6px;
+      border-radius: 4px;
+      border: solid .5px transparent;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .copt:hover {
+      background: #faf3d6;
+      border-color: var(--header-bar);
+    }
+
+    .copt input[type=checkbox] {
+      accent-color: var(--ink);
+      width: 13px;
+      height: 13px;
+      margin: 0;
+    }
+
+    /* add-button toolbar */
+    .btnrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0 2px;
+    }
+
+    .btnrow .addbtn {
+      margin-top: 0;
+    }
+
+    /* card grid containers */
+    #bindingRows, #decorRows {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btype {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--header-barlabel);
+      margin-bottom: 6px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--section-header-band);
+    }
+
+    .brow {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px 12px;
+      background: #fff;
+      border: 1px solid var(--section-header-band);
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+      position: relative;
+    }
+    .brow .rm:hover, .drow .rm:hover{
+      background-color: rgb(255, 235, 235);
+    }
+
+    .drow {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px 12px;
+      background: #fff;
+      border: 1px solid var(--section-header-band);
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+      position: relative;
+    }
+
+    .dctrls {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .card-field .box {
+      width: 100%;
+    }
+
+    .card-checks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 10px;
+    }
+
+    .lbreak {
+      flex-basis: 100%;
+      height: 0;
+    }
+
+    /* notes box */
+    .notewrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .drow .msd-btn{
+      border:solid 1px var(--boxborder);
+      width: 100%;
+    }
+
+    .notebox {
+      flex: 1 1 auto;
+      min-height: 84px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 7px 8px;
+      font: inherit;
+      font-size: 12px;
+      border-radius: 2px;
+      resize: vertical;
+      transition: border-color 0.15s ease;
+    }
+
+    .notebox:hover {
+      border-color: var(--header-bar);
+    }
+
+    .notebox:focus {
+      outline: none;
+      border-color: var(--header-bar);
+      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+    }
+
+    .brow .rm,
+    .drow .rm {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+    }
+
+    .box.grow {
+      flex: 1 1 auto;
+      min-width: 140px;
+    }
+
+    /* ============================================================
+     MATERIAL SECTION  (dynamic)
+     ============================================================ */
+    .msec {
+      padding: 4px 0 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .msec .sub {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #6B5610;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      margin: 12px 0 5px;
+    }
+
+    .msec .count {
+      font-weight: 400;
+      color: #6f6a5a;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 11px;
+    }
+
+    .msec table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .msec th {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      color: #6f6a5a;
+      text-align: left;
+      padding: 4px 8px;
+      border-bottom: 1px solid var(--line);
+      text-transform: uppercase;
+    }
+
+    .msec td {
+      padding: 0px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+      transition: background-color 0.1s ease;
+    }
+
+
+
+    .msec .num {
+      color: #6f6a5a;
+      text-align: center;
+      font-size: 11px;
+      width: 26px;
+    }
+
+    .msec input[type=text] {
+      width: 100%;
+      border: 1.5px solid transparent;
+      background: transparent;
+      padding: 5px 6px;
+      font: inherit;
+      font-size: 12px;
+      border-radius: 3px;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .msec input[type=text]:hover {
+      border-color: var(--header-bar);
+    }
+
+    .msec input[type=text]:focus {
+      outline: none;
+      background: #fff;
+      border-color: var(--header-bar);
+      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+    }
+
+    .msec .types {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 0 9px;
+      white-space: nowrap;
+    }
+
+    .msec .types label {
+      font-size: 10.5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      color: var(--ink);
+    }
+
+    .msec .types input[type=checkbox] {
+      accent-color: var(--boxborder);
+      width: 12px;
+      height: 12px;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .rm {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      padding: 2px 6px;
+      color: #b34;
+      border-radius: 3px;
+      transition: color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .addbtn {
+      margin-top: 8px;
+      border: 1px solid var(--header-bar);
+      background: #faf3d6;
+      color: var(--ink);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      letter-spacing: .03em;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .addbtn:hover {
+      background: #f0e4b0;
+      border-color: #a07d1a;
+    }
+
+    .addbtn:active {
+      background: #e8d89a;
+    }
+
+    .msec .mat-note {
+      font-size: 10px;
+      color: #6f6a5a;
+      font-style: italic;
+      margin: 12px 0 0;
+    }
+
+    .mat-group th {
+      color: var(--ink);
+    }
+
+    .inputs {
+      display: flex;
+      gap: 16px;
+    }
+
+    .input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+    }
+
+    /* ============================================================
+     DROP OVERLAY + PRINT FOOTER + STATE EMBED
+     ============================================================ */
+    .drop-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(201, 161, 44, .12);
+      border: 4px dashed var(--header-bar);
+      z-index: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .drop-overlay-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 36px 56px;
+      text-align: center;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, .14);
+    }
+
+    .drop-overlay-box p {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      color: var(--header-bar);
+    }
+
+    .drop-overlay-box small {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #888;
+    }
+
+    .print-footer { display: none; }
+    #stateEmbed   { display: none; }
+
+    /* Hide int table (not button) on screen when empty */
+    .mat-group:has(#intBody:empty) > table {
+      display: none;
+    }
+
+    /* ============================================================
+     PRINT VALIDATION — MODAL + TOAST
+     ============================================================ */
+    .print-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+    }
+
+    .print-modal {
+      background: #fff;
+      border-radius: 8px;
+      padding: 24px 24px 20px;
+      max-width: 380px;
+      width: 90%;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+    }
+
+    .print-modal-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      margin: 0 0 8px;
+      color: var(--ink);
+    }
+
+    .print-modal-msg {
+      font-size: 12px;
+      line-height: 1.6;
+      margin: 0 0 20px;
+      color: #555;
+    }
+
+    .print-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .btn-cancel {
+      border: 1px solid var(--section-header-band);
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+
+    .btn-cancel:hover { background: #f5f5f2; }
+
+    .btn-confirm {
+      border: 1px solid var(--header-bar);
+      background: var(--header-bar);
+      color: #fff;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.15s, border-color 0.15s;
+    }
+
+    .btn-confirm:hover {
+      background: #b08020;
+      border-color: #b08020;
+    }
+
+    .print-toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 500;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, .2);
+      white-space: nowrap;
+    }
+
+    .title .lab {
+      color: var(--header-color);
+    }
+
+    .types label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 2px;
+      border-radius: 4px;
+      border: solid .5px transparent;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .types label:hover {
+      background: #faf3d6;
+      border-color: var(--header-bar);
+    }
+
+    .types label:has(input:checked) {
+      background: var(--panel);
+      border-color: var(--header-bar);
+    }
+
+    /* ============================================================
+     SEGMENTED TOGGLE (New / Existing)
+     ============================================================ */
+    .seg-toggle {
+      display: inline-flex;
+      border: 1.5px solid var(--boxborder);
+      border-radius: 3px;
+      overflow: hidden;
+      height: 26px;
+    }
+
+    .seg-toggle input[type=radio] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .seg-toggle label {
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border-right: 1px solid var(--boxborder);
+      transition: background-color 0.15s ease, color 0.15s ease;
+      user-select: none;
+      color: var(--ink);
+      width: 100%;
+    }
+
+    .seg-toggle label:last-of-type {
+      border-right: none;
+    }
+
+    .seg-toggle input:checked + label {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .seg-toggle label:hover {
+      background: #faf3d6;
+    }
+
+    .seg-toggle input:checked + label:hover {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .newex-field {
+      gap: 6px;
+    }
+
+    /* ============================================================
+     MULTI-SELECT DROPDOWN
+     ============================================================ */
+    .msd {
+      position: relative;
+      display: inline-block;
+    }
+
+    .msec td .msd {
+      width: 100%;
+    }
+
+    .msd-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      border: none;
+      background: #fff;
+      padding: 3px 7px;
+      font: inherit;
+      font-size: 11px;
+      border-radius: 2px;
+      cursor: pointer;
+      color: var(--ink);
+      height: 26px;
+      white-space: nowrap;
+      transition: border-color 0.15s ease;
+      border-style: solid;
+      border-width: 0px .5px;
+      border-radius: 0px;
+      border-color: var(--help-text);
+    }
+
+    .msec td .msd-btn {
+      width: 100%;
+    }
+
+    .msec td:has(.rm){
+      align-items: center;
+      border-left: solid .5px var(--help-text);
+    }
+    .msec td:has(.rm):hover{
+      color: #811;
+      background: rgba(187, 51, 68, 0.1);
+    }
+    
+
+    .msd-btn:hover {
+      border-color: var(--header-bar);
+    }
+
+    .msd-btn:focus {
+      outline: none;
+      border-color: var(--header-bar);
+      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+    }
+
+    .msd-val {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      text-align: left;
+    }
+
+    .msd-caret {
+      font-size: 9px;
+      color: #888;
+      flex-shrink: 0;
+    }
+
+    .msd-panel {
+      position: absolute;
+      top: calc(100% + 3px);
+      left: 0;
+      background: #fff;
+      border: 1px solid var(--boxborder);
+      border-radius: 4px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, .12);
+      z-index: 100;
+      min-width: 140px;
+      padding: 4px 0;
+    }
+
+    .msd-opt {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      cursor: pointer;
+      font-size: 11px;
+      white-space: nowrap;
+      transition: background-color 0.1s ease;
+    }
+
+    .msd-opt:hover,
+    .msd-opt:focus {
+      background: #faf3d6;
+      outline: none;
+    }
+
+    .msd-opt input[type=checkbox] {
+      accent-color: var(--boxborder);
+      width: 12px;
+      height: 12px;
+      margin: 0;
+      flex-shrink: 0;
+    }
+    #sailclothEdgeMsd button{
+      border-width: .5px;
+    }
+
+    /* ============================================================
+     PRINT
+     ============================================================ */
+
+    @media print {
+      :root {
+        --header-bar: #ffffff;
+        --header-color: #000000;
+        --section-header-band: #e1e1e1;
+        --panel: #f3f3f3;
+        --ink: #262626;
+        --boxborder: #3A3A3A;
+        --line: #c6c6c6;
+        --header-barlabel: #929292;
+        --help-text: #939393;
+        --padding: 24px;
+      }
+
+      body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        padding-top: 0;
+      }
+
+      .title {
+        padding-bottom: 0;
+      }
+
+      button:not(.msd-btn) {
+        display: none !important;
+      }
+
+      .types label:has(input:not(:checked)) {
+        display: none;
+      }
+
+      .sheet {
+        box-shadow: none;
+        margin: 0;
+      }
+
+      .msec input[type=text]:hover,
+      .msec input[type=text]:focus {
+        background: transparent;
+        border-color: transparent;
+        box-shadow: none;
+      }
+
+      .mat-group:has(#intBody:empty) {
+        display: none;
+      }
+
+      .print-overlay, .print-toast, .drop-overlay {
+        display: none !important;
+      }
+
+      .print-footer {
+        display: block;
+        position: fixed;
+        bottom: 18pt;
+        right: 24pt;
+        font-size: 8pt;
+        color: #aaa;
+        font-style: italic;
+        letter-spacing: .02em;
+      }
+
+      #stateEmbed {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        font-size: 4.5pt;
+        font-family: "Courier New", monospace;
+        color: #ffffff;
+        word-break: break-all;
+        line-height: 1.15;
+        padding: 0 24pt 4pt;
+        z-index: 0;
+      }
+
+      .brow, .drow {
+        box-shadow: none;
+        border-color: #d0d0d0;
+      }
+
+      .seg-toggle {
+        border: none;
+        height: auto;
+        overflow: visible;
+      }
+
+      .seg-toggle input[type=radio] {
+        display: none;
+      }
+
+      .seg-toggle input:not(:checked) + label {
+        display: none;
+      }
+
+      .seg-toggle input:checked + label {
+        background: transparent;
+        color: var(--ink);
+        padding: 0;
+        border: none;
+      }
+
+      .seg-toggle:not(:has(input:checked))::after {
+        content: "New/Existing not defined";
+        font-size: 11px;
+        color: #999;
+        font-style: italic;
+      }
+      .msd-btn{
+        background-color: transparent;
+      }
+      .msd-caret {
+        display: none;
+      }
+
+      .msd-panel {
+        display: none !important;
+      }
+      .colrm{
+        display: none;
+      }
+
+      @page {
+        size: 11in 17in;
+        margin: 0;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="sheet">
+
+    <!-- ===== TITLE BAR ===== -->
+    <div class="title">
+      Menu Construction Sheet
+      <div class="inputs">
+        <div class="input-wrap">
+          <span class="lab">Designer:</span>
+          <input style="max-width: 80px;" type="text" class="box sm">
+        </div>
+
+        <div class="input-wrap">
+          <span class="lab">Job Number:</span>
+          <input type="text" id="job-number" class="box sm">
+        </div>
+      </div>
+    </div>
+
+    <div class="body">
+
+      <!-- ===== SECTION 1: HEADER / JOB INFO (static, fillable) ===== -->
+      <div class="header-panel">
+        <div class="input-wrap">
+          <span class="lab">Property Name:</span>
+          <input type="text" class="box grow">
+        </div>
+        <div class="input-wrap">
+          <span class="lab">Job Description:</span>
+          <input type="text" class="box grow">
+        </div>
+      </div>
+
+      <!-- ===== SECTION 2: SIZE SPECS (static, fillable) ===== -->
+      <div class="band">Size Specs</div>
+      <div class="section">
+        <div class="frow">
+          <span class="lab">Cover Size:</span>
+          <input type="text" class="box md">
+          <span class="lab">Insert Size:</span>
+          <input type="text" class="box md">
+          <span class="lab">Insert Count:</span>
+          <input type="text" class="box sm">
+        </div>
+
+        <button class="addbtn" id="sailclothAdd" onclick="showSailcloth(true)">+ Add sailcloth reveal</button>
+
+        <div class="frow size-sec" id="sailclothRow" style="display:none; margin-top: 16px;">
+          <span class="lab">Sailcloth Reveal Size:</span>
+          <input type="text" class="box">
+          <span class="lab" style="margin-left:8px;">Edge:</span>
+          <div class="msd" id="sailclothEdgeMsd" data-placeholder="None Selected">
+            <button type="button" class="msd-btn" onclick="msdToggle(this)" onkeydown="msdBtnKeydown(event,this)">
+              <span class="msd-val">None Selected</span>
+              <span class="msd-caret">▾</span>
+            </button>
+            <div class="msd-panel" style="display:none;">
+              <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox" value="Exposed" onchange="msdUpdate(this)"> Exposed</label>
+              <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox" value="Closed" onchange="msdUpdate(this)"> Closed</label>
+              <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox" value="Flush" onchange="msdUpdate(this)"> Flush</label>
+            </div>
+          </div>
+          <button class="rm" title="Remove" onclick="showSailcloth(false)" style="margin-left:4px;">&times;</button>
+        </div>
+      </div>
+
+      <!-- ===== SECTION 3: MATERIAL (dynamic, fillable) ===== -->
+      <div class="band" style="display: flex; flex-direction: row; justify-content: space-between;">
+        Material
+        <div class="count-group">
+          <span class="count" id="extCount">1 ext</span>
+         / 
+         <span class="count" id="intCount">0 int</span>
+        </div>
+      </div>
+      <div class="msec">
+        <div class="mat-group">
+        <table>
+          <thead>
+            <tr>
+              <th class="num">#</th>
+              <th style="width:300px;">Exterior Material / Color</th>
+              <th>Type</th>
+              <th style="width:170px;">Function</th>
+              <th class="colrm" style="width:26px;"></th>
+            </tr>
+          </thead>
+          <tbody id="extBody"></tbody>
+        </table>
+        <button class="addbtn" onclick="addRow('ext')">+ Add exterior material</button>
+      </div>
+        <div class="mat-group">
+          <table>
+            <thead>
+              <tr>
+                <th class="num">#</th>
+                <th style="width:300px;">interior Material / Color</th>
+                <th>Type</th>
+                <th style="width:170px;">Function</th>
+                <th class="colrm" style="width:26px;"></th>
+              </tr>
+            </thead>
+            <tbody id="intBody"></tbody>
+          </table>
+          <button class="addbtn" onclick="addRow('int')">+ Add interior material</button>
+        </div>
+      </div>
+
+      <!-- ===== SECTION 4: BINDING TYPE (build-as-needed) ===== -->
+      <div class="band">Binding Type</div>
+      <div class="section">
+        <div class="btnrow">
+          <button class="addbtn" id="badd-corners" onclick="addBinding('corners')">+ Corners</button>
+          <button class="addbtn" id="badd-tabs" onclick="addBinding('tabs')">+ Tabs</button>
+          <button class="addbtn" id="badd-cord" onclick="addBinding('cord')">+ Menu Cord</button>
+          <button class="addbtn" id="badd-screw" onclick="addBinding('screw')">+ Screwposts</button>
+          <button class="addbtn" id="badd-ring" onclick="addBinding('ring')">+ Ring Binder</button>
+          <button class="addbtn" id="badd-clips" onclick="addBinding('clips')">+ Clips</button>
+          <button class="addbtn" id="badd-bands" onclick="addBinding('bands')">+ Bands</button>
+          <button class="addbtn" id="badd-other" onclick="addBinding('other')">+ Other</button>
+        </div>
+        <div id="bindingRows"></div>
+      </div>
+
+      <!-- ===== SECTION 5: DECORATION (build-as-needed) ===== -->
+      <div class="band">Decoration</div>
+      <div class="section">
+        <div class="btnrow">
+          <button class="addbtn" id="dadd-deboss" onclick="addDecor('deboss')">+ Deboss</button>
+          <button class="addbtn" id="dadd-emboss" onclick="addDecor('emboss')">+ Emboss</button>
+          <button class="addbtn" id="dadd-diecut" onclick="addDecor('diecut')">+ Diecut / Window</button>
+          <button class="addbtn" id="dadd-laser" onclick="addDecor('laser')">+ Laser-Cut / Engrave</button>
+          <button class="addbtn" id="dadd-colorprint" onclick="addDecor('colorprint')">+ Color Print</button>
+          <button class="addbtn" id="dadd-other" onclick="addDecor('other')">+ Other</button>
+        </div>
+        <div id="decorRows"></div>
+      </div>
+
+      <!-- ===== SECTION 6: NOTES (conditional) ===== -->
+      <div class="band">Notes</div>
+      <div class="section">
+        <button class="addbtn" id="notesAdd" onclick="showNotes(true)">+ Add notes</button>
+        <div class="notewrap" id="notesRow" style="display:none;">
+          <textarea class="notebox"></textarea>
+          <button class="rm" title="Remove" onclick="showNotes(false)">&times;</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Drop overlay -->
+  <div id="dropOverlay" class="drop-overlay" style="display:none;">
+    <div class="drop-overlay-box">
+      <p>Drop PDF to load</p>
+      <small>Must be a PDF generated by this tool</small>
+    </div>
+  </div>
+
+  <!-- Print footer (date + version) -->
+  <div id="printFooter" class="print-footer"></div>
+
+  <!-- Embedded state data (shows in PDF text layer, invisible on screen) -->
+  <div id="stateEmbed"></div>
+
+  <!-- Print validation UI -->
+  <div id="printOverlay" class="print-overlay" style="display:none;">
+    <div class="print-modal">
+      <p class="print-modal-title" id="printModalTitle"></p>
+      <p class="print-modal-msg" id="printModalMsg"></p>
+      <div class="print-modal-actions">
+        <button class="btn-cancel" id="printModalCancel">Cancel</button>
+        <button class="btn-confirm" id="printModalConfirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+  <div id="printToast" class="print-toast" style="display:none;"></div>
+
+  <script>
+    var TYPES = {
+      ext: ["Bookcloth", "Wood", "Rockboard", "Metal", "Leather", "Acrylic", "4C Litho"],
+      int: ["Liner", "Panels", "Pockets", "CC Slot", "Pen Loop", "4C Litho"]
+    };
+    var msdCounter = 0;
+    function msdHtml(placeholder, options, single) {
+      var grp = single ? 'msd-' + (msdCounter++) : null;
+      var opts = options.map(function (o) {
+        var input = single
+          ? '<input type="radio" name="' + grp + '" value="' + o + '" onchange="msdUpdate(this)">'
+          : '<input type="checkbox" value="' + o + '" onchange="msdUpdate(this)">';
+        return '<label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)">' + input + ' ' + o + '</label>';
+      }).join('');
+      return '<div class="msd" data-placeholder="' + placeholder + '">' +
+        '<button type="button" class="msd-btn" onclick="msdToggle(this)" onkeydown="msdBtnKeydown(event,this)">' +
+        '<span class="msd-val">' + placeholder + '</span>' +
+        '<span class="msd-caret">▾</span></button>' +
+        '<div class="msd-panel" style="display:none;">' + opts + '</div></div>';
+    }
+    function msdToggle(btn) {
+      var panel = btn.nextElementSibling;
+      var isOpen = panel.style.display !== 'none';
+      document.querySelectorAll('.msd-panel').forEach(function (p) { p.style.display = 'none'; });
+      if (!isOpen) panel.style.display = 'block';
+    }
+    function msdUpdate(checkbox) {
+      var msd = checkbox.closest('.msd');
+      var checked = Array.from(msd.querySelectorAll('input:checked')).map(function (i) { return i.value; });
+      msd.querySelector('.msd-val').textContent = checked.length ? checked.join(', ') : msd.dataset.placeholder;
+    }
+    function msdReset(container) {
+      container.querySelectorAll('.msd').forEach(function (msd) {
+        msd.querySelectorAll('input[type=checkbox]').forEach(function (c) { c.checked = false; });
+        msd.querySelector('.msd-val').textContent = msd.dataset.placeholder;
+        msd.querySelector('.msd-panel').style.display = 'none';
+      });
+    }
+    function cfToggle(cb) {
+      var field = cb.closest('.newex-field');
+      var input = field.querySelector('input[type=text]');
+      input.style.display = cb.checked ? '' : 'none';
+      if (!cb.checked) input.value = '';
+    }
+    function newexChange(radio) {
+      var field = radio.closest('.newex-field');
+      if (!field) return;
+      var job = field.querySelector('.newex-job');
+      if (job) {
+        var show = radio.dataset.cond === 'true';
+        job.style.display = show ? '' : 'none';
+        if (!show) job.value = '';
+      }
+    }
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.msd')) {
+        document.querySelectorAll('.msd-panel').forEach(function (p) { p.style.display = 'none'; });
+      }
+    });
+    function addRow(sec) {
+      var tb = document.getElementById(sec + "Body");
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td class="num"></td>' +
+        '<td><input type="text"></td>' +
+        '<td>' + msdHtml('', TYPES[sec], sec === 'ext') + '</td>' +
+        '<td><input type="text"></td>' +
+        '<td class="colrm"><button class="rm" title="Remove" onclick="removeRow(this,\'' + sec + '\')">&times;</button></td>';
+      tb.appendChild(tr);
+      renumber(sec);
+    }
+    function removeRow(btn, sec) {
+      var tb = document.getElementById(sec + "Body");
+      if (sec === 'ext' && tb.children.length <= 1) {
+        var tr = btn.closest('tr');
+        tr.querySelectorAll('input[type=text]').forEach(function(i) { i.value = ''; });
+        msdReset(tr);
+        return;
+      }
+      btn.closest("tr").remove();
+      renumber(sec);
+    }
+    function renumber(sec) {
+      var rows = document.getElementById(sec + "Body").children;
+      for (var i = 0; i < rows.length; i++) { rows[i].querySelector(".num").textContent = i + 1; }
+      var n = rows.length;
+      document.getElementById(sec + "Count").textContent = n + " " + sec;
+    }
+    function showSailcloth(on) {
+      document.getElementById('sailclothRow').style.display = on ? 'flex' : 'none';
+      document.getElementById('sailclothAdd').style.display = on ? 'none' : 'inline-block';
+      if (!on) {
+        var row = document.getElementById('sailclothRow');
+        row.querySelectorAll('input[type=text]').forEach(function (i) { i.value = ''; });
+        msdReset(row);
+      }
+    }
+    var BINDING_ORDER = ['corners', 'tabs', 'cord', 'screw', 'ring', 'clips', 'bands', 'other'];
+    var DECOR_ORDER  = ['deboss', 'emboss', 'diecut', 'laser', 'colorprint', 'other'];
+    function insertOrdered(containerId, el, key, order) {
+      var container = document.getElementById(containerId);
+      var idx = order.indexOf(key);
+      var siblings = container.children;
+      for (var i = 0; i < siblings.length; i++) {
+        var sibKey = siblings[i].id.replace(/^[bd]row-/, '');
+        if (order.indexOf(sibKey) > idx) {
+          container.insertBefore(el, siblings[i]);
+          return;
+        }
+      }
+      container.appendChild(el);
+    }
+    var BINDING = {
+      corners: { label: "Corners", fields: ["Corners", "Board"] },
+      tabs: { label: "Tabs", fields: ["Tabs", "Board"] },
+      cord: { label: "Menu Cord", fields: ["Cord", "Eyelets"] },
+      ring: { label: "Ring Binder", fields: ["Size / Color"] },
+      screw: { label: "Screwposts", fields: ["Size / Color", "Distance Apart", "Application"] },
+      clips: { label: "Clips", fields: ["Color"] },
+      bands: { label: "Bands", fields: ["Size / Color"] },
+      other: { label: "Other", fields: [""] }
+    };
+    function addBinding(key) {
+      var cfg = BINDING[key];
+      var row = document.createElement('div');
+      row.className = 'brow';
+      row.id = 'brow-' + key;
+      var html = '<span class="btype">' + cfg.label + '</span>';
+      cfg.fields.forEach(function (f) {
+        if (f) { html += '<div class="card-field"><span class="lab">' + f + '</span><input type="text" class="box"></div>'; }
+        else { html += '<div class="card-field"><input type="text" class="box"></div>'; }
+      });
+      html += '<button class="rm" title="Remove" onclick="removeBinding(\'' + key + '\')">&times;</button>';
+      row.innerHTML = html;
+      insertOrdered('bindingRows', row, key, BINDING_ORDER);
+      document.getElementById('badd-' + key).style.display = 'none';
+    }
+    function removeBinding(key) {
+      var row = document.getElementById('brow-' + key);
+      if (row) row.remove();
+      document.getElementById('badd-' + key).style.display = 'inline-block';
+    }
+    var DECOR = {
+      deboss: {
+        label: "Deboss", items: [
+          { k: 'f', l: 'Location', w: 'md' },
+          { k: 'newex', jobNum: true },
+          { k: 'c', l: 'Blind' },
+          { k: 'cf', l: 'Foil', ph: 'Foil Color' },
+          { k: 'msd', l: 'No Die Type Selected', opts: ['Brass', 'Magnesium', 'River City'] }
+        ]
+      },
+      laser: {
+        label: "Laser-Cut / Engrave", items: [
+          { k: 'f', l: 'Location', w: 'md' },
+          { k: 'c', l: 'Engrave' },
+          { k: 'cf', l: 'Laser-Cut', ph: 'Underlay' }
+        ]
+      },
+      colorprint: {
+        label: "Color Print", items: [
+          { k: 'f', l: 'Location', w: 'grow' }
+        ]
+      },
+      emboss: {
+        label: "Emboss", items: [
+          { k: 'f', l: 'Location', w: 'md' },
+          { k: 'newex', jobNum: true }
+        ]
+      },
+      diecut: {
+        label: "Diecut / Window", items: [
+          { k: 'f', l: 'Location', w: 'md' },
+          { k: 'newex' },
+          { k: 'f', l: 'Size', w: 'sm' },
+          { k: 'c', l: 'Tip-In' }, { k: 'cf', l: 'Underlay', ph: 'Material' }
+        ]
+      },
+      other: { label: "Other", items: [{ k: 'grow' }] }
+    };
+    function addDecor(key) {
+      var cfg = DECOR[key];
+      var row = document.createElement('div');
+      row.className = 'drow';
+      row.id = 'drow-' + key;
+      var ctrls = '';
+      cfg.items.forEach(function (it) {
+        if (it.k === 'f') { ctrls += '<div class="card-field"><span class="lab">' + it.l + '</span><input type="text" class="box"></div>'; }
+        else if (it.k === 'c') { ctrls += '<label class="copt"><input type="checkbox">' + it.l + '</label>'; }
+        else if (it.k === 'cf') {
+          ctrls += '<div class="card-field newex-field">' +
+            '<label class="copt"><input type="checkbox" onchange="cfToggle(this)">' + it.l + '</label>' +
+            '<input type="text" class="box" placeholder="' + (it.ph || '') + '" style="display:none;">' +
+            '</div>';
+        }
+        else if (it.k === 'br') { /* no-op in column layout */ }
+        else if (it.k === 'grow') { ctrls += '<div class="card-field"><input type="text" class="box"></div>'; }
+        else if (it.k === 'msd') { ctrls += msdHtml(it.l, it.opts); }
+        else if (it.k === 'newex') {
+          var opt1 = it.opt1 || 'New';
+          var opt2 = it.opt2 || 'Existing';
+          var rname = key + '-' + opt1.toLowerCase().replace(/\s+/g, '-');
+          var hasCond = it.jobNum || !!it.condPh;
+          var condPh = it.condPh || 'Job #';
+          var condInput = hasCond
+            ? '<input type="text" class="box newex-job" placeholder="' + condPh + '" style="display:none;">'
+            : '';
+          ctrls += '<div class="card-field newex-field">' +
+            '<div class="seg-toggle">' +
+            '<input type="radio" name="' + rname + '" id="' + rname + '-0" value="' + opt1 + '" onchange="newexChange(this)">' +
+            '<label for="' + rname + '-0">' + opt1 + '</label>' +
+            '<input type="radio" name="' + rname + '" id="' + rname + '-1" value="' + opt2 + '"' + (hasCond ? ' data-cond="true"' : '') + ' onchange="newexChange(this)">' +
+            '<label for="' + rname + '-1">' + opt2 + '</label>' +
+            '</div>' + condInput + '</div>';
+        }
+      });
+      row.innerHTML = '<span class="btype">' + cfg.label + '</span>' +
+        '<div class="dctrls">' + ctrls + '</div>' +
+        '<button class="rm" title="Remove" onclick="removeDecor(\'' + key + '\')">&times;</button>';
+      insertOrdered('decorRows', row, key, DECOR_ORDER);
+      document.getElementById('dadd-' + key).style.display = 'none';
+    }
+    function removeDecor(key) {
+      var r = document.getElementById('drow-' + key);
+      if (r) r.remove();
+      document.getElementById('dadd-' + key).style.display = 'inline-block';
+    }
+    function showNotes(on) {
+      document.getElementById('notesRow').style.display = on ? 'flex' : 'none';
+      document.getElementById('notesAdd').style.display = on ? 'none' : 'inline-block';
+      if (!on) { document.getElementById('notesRow').querySelector('textarea').value = ''; }
+    }
+    // ── MSD keyboard navigation ───────────────────────────────────
+
+    function msdBtnKeydown(e, btn) {
+      var panel = btn.nextElementSibling;
+      var isOpen = panel.style.display !== 'none';
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!isOpen) msdToggle(btn);
+        var first = panel.querySelector('.msd-opt');
+        if (first) first.focus();
+      } else if (e.key === 'ArrowUp' && !isOpen) {
+        var td = btn.closest('td');
+        if (td) {
+          e.preventDefault();
+          var tr = td.closest('tr');
+          var colIdx = Array.from(tr.cells).indexOf(td);
+          var rows = Array.from(tr.closest('tbody').rows);
+          var prev = rows[rows.indexOf(tr) - 1];
+          if (prev) {
+            var el = prev.cells[colIdx].querySelector('.msd-btn, input[type=text]');
+            if (el) el.focus();
+          }
+        }
+      } else if (e.key === 'Escape' && isOpen) {
+        e.preventDefault();
+        panel.style.display = 'none';
+      } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (!isOpen) msdToggle(btn);
+        var letter = e.key.toLowerCase();
+        var match = Array.from(panel.querySelectorAll('.msd-opt')).find(function (o) {
+          return o.textContent.trim().toLowerCase().startsWith(letter);
+        });
+        if (match) { e.preventDefault(); match.focus(); }
+      }
+    }
+
+    function msdOptKeydown(e, label) {
+      var panel = label.closest('.msd-panel');
+      var msd   = label.closest('.msd');
+      var opts  = Array.from(panel.querySelectorAll('.msd-opt'));
+      var idx   = opts.indexOf(label);
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (idx < opts.length - 1) opts[idx + 1].focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (idx > 0) opts[idx - 1].focus();
+        else { panel.style.display = 'none'; msd.querySelector('.msd-btn').focus(); }
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        var inp = label.querySelector('input');
+        if (inp.type === 'radio') {
+          inp.checked = true; msdUpdate(inp);
+          panel.style.display = 'none'; msd.querySelector('.msd-btn').focus();
+        } else {
+          inp.checked = !inp.checked; msdUpdate(inp);
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        panel.style.display = 'none'; msd.querySelector('.msd-btn').focus();
+      } else if (e.key === 'Tab') {
+        panel.style.display = 'none'; // let Tab bubble
+      } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        var letter = e.key.toLowerCase();
+        for (var i = 1; i <= opts.length; i++) {
+          var j = (idx + i) % opts.length;
+          if (opts[j].textContent.trim().toLowerCase().startsWith(letter)) {
+            e.preventDefault(); opts[j].focus(); break;
+          }
+        }
+      }
+    }
+
+    // ── Material table keyboard navigation ───────────────────────
+
+    document.addEventListener('keydown', function (e) {
+      var t = e.target;
+      var inMatInput = t.matches && t.matches('.msec input[type=text]');
+      var inMatMsd   = t.matches && t.matches('.msec .msd-btn');
+      if (!inMatInput && !inMatMsd) return;
+
+      var td = t.closest('td');
+      var tr = td.closest('tr');
+      var colIdx = Array.from(tr.cells).indexOf(td);
+      var tbody  = tr.closest('tbody');
+      var rows   = Array.from(tbody.rows);
+      var rowIdx = rows.indexOf(tr);
+
+      function focusCell(r, col) {
+        var cell = r.cells[col];
+        var el = cell.querySelector('input[type=text], .msd-btn');
+        if (el) el.focus();
+      }
+
+      var focusables = Array.from(tr.querySelectorAll('input[type=text], .msd-btn'));
+      var fi = focusables.indexOf(t);
+      var panelClosed = inMatMsd && t.nextElementSibling.style.display === 'none';
+
+      if (e.key === 'ArrowDown' && !e.shiftKey) {
+        if (inMatInput || panelClosed) {
+          if (rowIdx < rows.length - 1) { e.preventDefault(); focusCell(rows[rowIdx + 1], colIdx); }
+        }
+      } else if (e.key === 'ArrowUp' && !e.shiftKey) {
+        if (inMatInput || panelClosed) {
+          if (rowIdx > 0) { e.preventDefault(); focusCell(rows[rowIdx - 1], colIdx); }
+        }
+      } else if (e.key === 'ArrowLeft') {
+        var atStart = inMatInput && t.selectionStart === 0 && t.selectionEnd === 0;
+        if (atStart || panelClosed) {
+          if (fi > 0) { e.preventDefault(); focusables[fi - 1].focus(); }
+        }
+      } else if (e.key === 'ArrowRight') {
+        var atEnd = inMatInput && t.selectionStart === t.value.length;
+        if (atEnd || panelClosed) {
+          if (fi < focusables.length - 1) { e.preventDefault(); focusables[fi + 1].focus(); }
+        }
+      } else if (e.key === 'Enter' && inMatInput) {
+        if (fi < focusables.length - 1) {
+          e.preventDefault(); focusables[fi + 1].focus();
+        } else if (rowIdx < rows.length - 1) {
+          e.preventDefault();
+          var el = rows[rowIdx + 1].querySelector('input[type=text], .msd-btn');
+          if (el) el.focus();
+        }
+      }
+    });
+
+    addRow("ext");
+
+    // ── Print validation ──────────────────────────────────────────
+
+    function matRowFields(tr) {
+      var texts = Array.from(tr.querySelectorAll('td input[type=text]'))
+        .map(function(i) { return i.value.trim(); });
+      var msd = tr.querySelector('.msd-val');
+      var type = msd ? msd.textContent.trim() : '';
+      return texts.concat([type]);
+    }
+
+    function isRowEmpty(tr) {
+      return matRowFields(tr).every(function(v) { return v === ''; });
+    }
+
+    function isRowIncomplete(tr) {
+      var vals = matRowFields(tr);
+      var filled = vals.filter(function(v) { return v !== ''; }).length;
+      return filled > 0 && filled < vals.length;
+    }
+
+    function showToast(msg) {
+      var el = document.getElementById('printToast');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(function() { el.style.display = 'none'; }, 4000);
+    }
+
+    function showModal(title, msg, confirmLabel, onConfirm) {
+      document.getElementById('printModalTitle').textContent = title;
+      document.getElementById('printModalMsg').textContent = msg;
+      document.getElementById('printModalConfirm').textContent = confirmLabel;
+      var overlay = document.getElementById('printOverlay');
+      overlay.style.display = 'flex';
+      document.getElementById('printModalConfirm').onclick = function() {
+        overlay.style.display = 'none';
+        onConfirm();
+      };
+      document.getElementById('printModalCancel').onclick = function() {
+        overlay.style.display = 'none';
+      };
+    }
+
+    function runPrintValidation(proceed) {
+      var extRows = Array.from(document.getElementById('extBody').children);
+      var intRows = Array.from(document.getElementById('intBody').children);
+      var allRows = extRows.concat(intRows);
+
+      // Block: all ext rows are empty — no material defined at all
+      if (extRows.every(isRowEmpty)) {
+        showToast('Please add at least one exterior material to proceed with print.');
+        return;
+      }
+
+      var emptyRows = allRows.filter(isRowEmpty);
+
+      function checkIncomplete(rows) {
+        var inc = rows.filter(isRowIncomplete);
+        if (inc.length > 0) {
+          var n = inc.length;
+          showModal(
+            'Incomplete rows',
+            n + ' material row' + (n > 1 ? 's have' : ' has') + ' some fields left empty. You can print anyway or cancel to review.',
+            'Print Anyway',
+            proceed
+          );
+        } else {
+          proceed();
+        }
+      }
+
+      if (emptyRows.length > 0) {
+        var n = emptyRows.length;
+        showModal(
+          'Empty rows found',
+          n + ' empty row' + (n > 1 ? 's were' : ' was') + ' found. Remove ' + (n > 1 ? 'them' : 'it') + ' and continue, or cancel to review.',
+          'Remove & Print',
+          function() {
+            emptyRows.forEach(function(tr) { tr.remove(); });
+            renumber('ext');
+            renumber('int');
+            var remaining = Array.from(document.getElementById('extBody').children)
+              .concat(Array.from(document.getElementById('intBody').children));
+            checkIncomplete(remaining);
+          }
+        );
+        return;
+      }
+
+      checkIncomplete(allRows);
+    }
+
+    // ── State capture ────────────────────────────────────────────
+
+    function captureFormState() {
+      var s = {
+        v: 1,
+        pv: (window._printVersion || 0) + 1,
+        d: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      };
+
+      var ti = document.querySelectorAll('.title .box');
+      s.des = ti[0] ? ti[0].value : '';
+      s.job = ti[1] ? ti[1].value : '';
+
+      var hi = document.querySelectorAll('.header-panel .box');
+      s.prop = hi[0] ? hi[0].value : '';
+      s.desc = hi[1] ? hi[1].value : '';
+
+      var si = document.querySelectorAll('.section .frow .box');
+      s.cov  = si[0] ? si[0].value : '';
+      s.ins  = si[1] ? si[1].value : '';
+      s.insc = si[2] ? si[2].value : '';
+
+      var scRow = document.getElementById('sailclothRow');
+      if (scRow && scRow.style.display !== 'none') {
+        var scT = scRow.querySelectorAll('input[type=text]');
+        s.sc = {
+          s: scT[0] ? scT[0].value : '',
+          e: Array.from(scRow.querySelectorAll('.msd input:checked')).map(function(i) { return i.value; })
+        };
+      }
+
+      function capRows(id) {
+        return Array.from(document.getElementById(id).rows).map(function(tr) {
+          var t = tr.querySelectorAll('input[type=text]');
+          return {
+            m:  t[0] ? t[0].value : '',
+            t:  Array.from(tr.querySelectorAll('.msd input:checked')).map(function(i) { return i.value; }),
+            fn: t[1] ? t[1].value : ''
+          };
+        });
+      }
+      s.ext = capRows('extBody');
+      s.int = capRows('intBody');
+
+      s.bind = {};
+      Object.keys(BINDING).forEach(function(key) {
+        var row = document.getElementById('brow-' + key);
+        if (row) s.bind[key] = Array.from(row.querySelectorAll('input[type=text]')).map(function(i) { return i.value; });
+      });
+
+      s.decor = {};
+      Object.keys(DECOR).forEach(function(key) {
+        var row = document.getElementById('drow-' + key);
+        if (!row) return;
+        var d = row.querySelector('.dctrls');
+        s.decor[key] = {
+          t: Array.from(d.querySelectorAll('input[type=text]')).map(function(i) {
+            return { v: i.value, vis: i.style.display !== 'none' };
+          }),
+          c: Array.from(d.querySelectorAll('input[type=checkbox]')).map(function(c) { return c.checked; }),
+          r: Array.from(d.querySelectorAll('.seg-toggle')).map(function(tog) {
+            var ch = tog.querySelector('input:checked');
+            return ch ? ch.value : null;
+          }),
+          m: Array.from(d.querySelectorAll('.msd')).map(function(msd) {
+            return Array.from(msd.querySelectorAll('input:checked')).map(function(i) { return i.value; });
+          })
+        };
+      });
+
+      var nr = document.getElementById('notesRow');
+      if (nr && nr.style.display !== 'none') s.notes = nr.querySelector('textarea').value;
+
+      return s;
+    }
+
+    // ── State restore ────────────────────────────────────────────
+
+    function restoreFormState(s) {
+      if (!s || s.v !== 1) { showToast('Unrecognized configuration format.'); return; }
+      window._printVersion = s.pv || 1;
+
+      var ti = document.querySelectorAll('.title .box');
+      if (ti[0]) ti[0].value = s.des || '';
+      if (ti[1]) ti[1].value = s.job || '';
+
+      var hi = document.querySelectorAll('.header-panel .box');
+      if (hi[0]) hi[0].value = s.prop || '';
+      if (hi[1]) hi[1].value = s.desc || '';
+
+      var si = document.querySelectorAll('.section .frow .box');
+      if (si[0]) si[0].value = s.cov  || '';
+      if (si[1]) si[1].value = s.ins  || '';
+      if (si[2]) si[2].value = s.insc || '';
+
+      if (s.sc) {
+        showSailcloth(true);
+        var scT = document.getElementById('sailclothRow').querySelectorAll('input[type=text]');
+        if (scT[0]) scT[0].value = s.sc.s || '';
+        var scM = document.getElementById('sailclothRow').querySelector('.msd');
+        if (scM) (s.sc.e || []).forEach(function(v) {
+          var inp = scM.querySelector('input[value="' + v + '"]');
+          if (inp) { inp.checked = true; msdUpdate(inp); }
+        });
+      } else {
+        showSailcloth(false);
+      }
+
+      function restoreRows(id, rows) {
+        var tb = document.getElementById(id);
+        tb.innerHTML = '';
+        var sec = id.replace('Body', '');
+        (rows.length > 0 ? rows : (sec === 'ext' ? [{ m: '', t: [], fn: '' }] : [])).forEach(function(rd) {
+          addRow(sec);
+          var tr = tb.lastElementChild;
+          var t = tr.querySelectorAll('input[type=text]');
+          if (t[0]) t[0].value = rd.m  || '';
+          if (t[1]) t[1].value = rd.fn || '';
+          var msd = tr.querySelector('.msd');
+          if (msd) (rd.t || []).forEach(function(v) {
+            var inp = msd.querySelector('input[value="' + v + '"]');
+            if (inp) { inp.checked = true; msdUpdate(inp); }
+          });
+        });
+        renumber(sec);
+      }
+      restoreRows('extBody', s.ext || []);
+      restoreRows('intBody', s.int || []);
+
+      document.getElementById('bindingRows').innerHTML = '';
+      Object.keys(BINDING).forEach(function(k) { document.getElementById('badd-' + k).style.display = 'inline-block'; });
+      Object.keys(s.bind || {}).forEach(function(key) {
+        if (!BINDING[key]) return;
+        addBinding(key);
+        var inputs = document.getElementById('brow-' + key).querySelectorAll('input[type=text]');
+        (s.bind[key] || []).forEach(function(v, i) { if (inputs[i]) inputs[i].value = v; });
+      });
+
+      document.getElementById('decorRows').innerHTML = '';
+      Object.keys(DECOR).forEach(function(k) { document.getElementById('dadd-' + k).style.display = 'inline-block'; });
+      Object.keys(s.decor || {}).forEach(function(key) {
+        if (!DECOR[key]) return;
+        addDecor(key);
+        var d = document.getElementById('drow-' + key).querySelector('.dctrls');
+        var data = s.decor[key];
+
+        // Toggles first (they reveal conditional inputs)
+        Array.from(d.querySelectorAll('.seg-toggle')).forEach(function(tog, i) {
+          var val = (data.r || [])[i];
+          if (val) {
+            var radio = tog.querySelector('input[value="' + val + '"]');
+            if (radio) { radio.checked = true; newexChange(radio); }
+          }
+        });
+        // Checkboxes
+        Array.from(d.querySelectorAll('input[type=checkbox]')).forEach(function(cb, i) {
+          var checked = (data.c || [])[i];
+          if (checked) { cb.checked = true; if (cb.closest('.newex-field')) cfToggle(cb); }
+        });
+        // Text inputs
+        Array.from(d.querySelectorAll('input[type=text]')).forEach(function(inp, i) {
+          var td = (data.t || [])[i];
+          if (td) {
+            inp.value = typeof td === 'object' ? (td.v || '') : td;
+            if (typeof td === 'object') inp.style.display = td.vis === false ? 'none' : '';
+          }
+        });
+        // MSD dropdowns
+        Array.from(d.querySelectorAll('.msd')).forEach(function(msd, i) {
+          ((data.m || [])[i] || []).forEach(function(v) {
+            var inp = msd.querySelector('input[value="' + v + '"]');
+            if (inp) { inp.checked = true; msdUpdate(inp); }
+          });
+        });
+      });
+
+      if (s.notes !== undefined && s.notes !== null) {
+        showNotes(true);
+        document.getElementById('notesRow').querySelector('textarea').value = s.notes;
+      } else {
+        showNotes(false);
+      }
+    }
+
+    // ── PDF drag-and-drop ─────────────────────────────────────────
+
+    var _pdfjsReady = false;
+    function ensurePdfJs(cb) {
+      if (_pdfjsReady) { cb(); return; }
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      s.onload = function() {
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        _pdfjsReady = true;
+        cb();
+      };
+      s.onerror = function() {
+        showToast('Could not load PDF reader — check your internet connection.');
+      };
+      document.head.appendChild(s);
+    }
+
+    document.addEventListener('dragover', function(e) {
+      if (e.dataTransfer.types && Array.from(e.dataTransfer.types).indexOf('Files') > -1) {
+        e.preventDefault();
+        document.getElementById('dropOverlay').style.display = 'flex';
+      }
+    });
+
+    document.addEventListener('dragleave', function(e) {
+      if (!e.relatedTarget || e.relatedTarget === document.documentElement) {
+        document.getElementById('dropOverlay').style.display = 'none';
+      }
+    });
+
+    document.addEventListener('drop', function(e) {
+      e.preventDefault();
+      document.getElementById('dropOverlay').style.display = 'none';
+      var file = e.dataTransfer.files[0];
+      if (!file || file.type !== 'application/pdf') {
+        showToast('Please drop a PDF generated by this tool.');
+        return;
+      }
+      ensurePdfJs(function() { loadFromPdf(file); });
+    });
+
+    function loadFromPdf(file) {
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        pdfjsLib.getDocument({ data: new Uint8Array(ev.target.result) }).promise
+          .then(function(pdf) {
+            var nums = [];
+            for (var i = 1; i <= pdf.numPages; i++) nums.push(i);
+            return Promise.all(nums.map(function(n) {
+              return pdf.getPage(n).then(function(p) { return p.getTextContent(); });
+            }));
+          })
+          .then(function(pages) {
+            var full = pages
+              .flatMap(function(p) { return p.items.map(function(it) { return it.str; }); })
+              .join('');
+            var m = full.match(/%%CS%%([\s\S]+?)%%CS%%/);
+            if (!m) { showToast('No configuration data found. Was this PDF made with this tool?'); return; }
+            try {
+              var json = decodeURIComponent(escape(atob(m[1].replace(/\s/g, ''))));
+              var state = JSON.parse(json);
+              restoreFormState(state);
+              showToast('Loaded v' + state.pv + ' · ' + state.d);
+            } catch(err) {
+              showToast('Could not read configuration data — PDF may be corrupted.');
+            }
+          })
+          .catch(function() { showToast('Could not parse this PDF.'); });
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // ── Print intercept ───────────────────────────────────────────
+
+    var _origPrint = window.print.bind(window);
+    window.print = function() {
+      runPrintValidation(function() {
+        var state = captureFormState();
+
+        var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+        document.getElementById('stateEmbed').textContent = '%%CS%%' + b64 + '%%CS%%';
+        document.getElementById('printFooter').textContent = 'v' + state.pv + ' \xb7 ' + state.d;
+
+        var origTitle = document.title;
+        document.title = (state.job ? state.job + ' ' : '') + 'MCS v' + state.pv;
+        window.addEventListener('afterprint', function onAP() {
+          document.title = origTitle;
+          window.removeEventListener('afterprint', onAP);
+        });
+
+        // NOTE: _printVersion is NOT updated here intentionally.
+        // It only advances when a saved PDF is dragged back and loaded,
+        // so cancelling the print dialog never increments the version.
+
+        _origPrint();
+      });
+    };
+
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault();
+        window.print();
+      }
+    });
+  </script>
+</body>
+
+</html>
