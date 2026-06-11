@@ -1352,11 +1352,14 @@
       },
       other: { label: "Other", items: [{ k: 'grow' }] }
     };
+    var _decorUid = 0;
     function addDecor(key) {
       var cfg = DECOR[key];
+      var uid = key + '-' + (_decorUid++);
       var row = document.createElement('div');
       row.className = 'drow';
-      row.id = 'drow-' + key;
+      row.id = 'drow-' + uid;
+      row.dataset.key = key;
       var ctrls = '';
       cfg.items.forEach(function (it) {
         if (it.k === 'f') { ctrls += '<div class="card-field"><span class="lab">' + it.l + '</span><input type="text" class="box"></div>'; }
@@ -1373,7 +1376,8 @@
         else if (it.k === 'newex') {
           var opt1 = it.opt1 || 'New';
           var opt2 = it.opt2 || 'Existing';
-          var rname = key + '-' + opt1.toLowerCase().replace(/\s+/g, '-');
+          // Use uid (not key) so multiple instances have independent radio groups
+          var rname = uid + '-' + opt1.toLowerCase().replace(/\s+/g, '-');
           var hasCond = it.jobNum || !!it.condPh;
           var condPh = it.condPh || 'Job #';
           var condInput = hasCond
@@ -1390,14 +1394,24 @@
       });
       row.innerHTML = '<span class="btype">' + cfg.label + '</span>' +
         '<div class="dctrls">' + ctrls + '</div>' +
-        '<button class="rm" title="Remove" onclick="removeDecor(\'' + key + '\')">&times;</button>';
+        '<button class="rm" title="Remove" onclick="removeDrow(\'' + uid + '\')">&times;</button>';
       insertOrdered('decorRows', row, key, DECOR_ORDER);
-      document.getElementById('dadd-' + key).style.display = 'none';
+      renumberDecor(key);
+      // Add buttons are never hidden — multiple instances per type are allowed
     }
-    function removeDecor(key) {
-      var r = document.getElementById('drow-' + key);
-      if (r) r.remove();
-      document.getElementById('dadd-' + key).style.display = 'inline-block';
+    function renumberDecor(key) {
+      var rows = Array.from(document.querySelectorAll('.drow[data-key="' + key + '"]'));
+      var label = DECOR[key].label;
+      rows.forEach(function(row, i) {
+        row.querySelector('.btype').textContent = rows.length > 1 ? label + ' ' + (i + 1) : label;
+      });
+    }
+    function removeDrow(uid) {
+      var r = document.getElementById('drow-' + uid);
+      if (!r) return;
+      var key = r.dataset.key;
+      r.remove();
+      renumberDecor(key);
     }
     function showNotes(on) {
       document.getElementById('notesRow').style.display = on ? 'flex' : 'none';
@@ -1676,22 +1690,24 @@
 
       s.decor = {};
       Object.keys(DECOR).forEach(function(key) {
-        var row = document.getElementById('drow-' + key);
-        if (!row) return;
-        var d = row.querySelector('.dctrls');
-        s.decor[key] = {
-          t: Array.from(d.querySelectorAll('input[type=text]')).map(function(i) {
-            return { v: i.value, vis: i.style.display !== 'none' };
-          }),
-          c: Array.from(d.querySelectorAll('input[type=checkbox]')).map(function(c) { return c.checked; }),
-          r: Array.from(d.querySelectorAll('.seg-toggle')).map(function(tog) {
-            var ch = tog.querySelector('input:checked');
-            return ch ? ch.value : null;
-          }),
-          m: Array.from(d.querySelectorAll('.msd')).map(function(msd) {
-            return Array.from(msd.querySelectorAll('input:checked')).map(function(i) { return i.value; });
-          })
-        };
+        var rows = Array.from(document.querySelectorAll('.drow[data-key="' + key + '"]'));
+        if (rows.length === 0) return;
+        s.decor[key] = rows.map(function(row) {
+          var d = row.querySelector('.dctrls');
+          return {
+            t: Array.from(d.querySelectorAll('input[type=text]')).map(function(i) {
+              return { v: i.value, vis: i.style.display !== 'none' };
+            }),
+            c: Array.from(d.querySelectorAll('input[type=checkbox]')).map(function(c) { return c.checked; }),
+            r: Array.from(d.querySelectorAll('.seg-toggle')).map(function(tog) {
+              var ch = tog.querySelector('input:checked');
+              return ch ? ch.value : null;
+            }),
+            m: Array.from(d.querySelectorAll('.msd')).map(function(msd) {
+              return Array.from(msd.querySelectorAll('input:checked')).map(function(i) { return i.value; });
+            })
+          };
+        });
       });
 
       var nr = document.getElementById('notesRow');
@@ -1763,39 +1779,42 @@
       });
 
       document.getElementById('decorRows').innerHTML = '';
-      Object.keys(DECOR).forEach(function(k) { document.getElementById('dadd-' + k).style.display = 'inline-block'; });
       Object.keys(s.decor || {}).forEach(function(key) {
         if (!DECOR[key]) return;
-        addDecor(key);
-        var d = document.getElementById('drow-' + key).querySelector('.dctrls');
-        var data = s.decor[key];
+        // Support old format (single object) and new format (array of objects)
+        var instances = Array.isArray(s.decor[key]) ? s.decor[key] : [s.decor[key]];
+        instances.forEach(function(data) {
+          addDecor(key);
+          var rows = document.querySelectorAll('.drow[data-key="' + key + '"]');
+          var d = rows[rows.length - 1].querySelector('.dctrls');
 
-        // Toggles first (they reveal conditional inputs)
-        Array.from(d.querySelectorAll('.seg-toggle')).forEach(function(tog, i) {
-          var val = (data.r || [])[i];
-          if (val) {
-            var radio = tog.querySelector('input[value="' + val + '"]');
-            if (radio) { radio.checked = true; newexChange(radio); }
-          }
-        });
-        // Checkboxes
-        Array.from(d.querySelectorAll('input[type=checkbox]')).forEach(function(cb, i) {
-          var checked = (data.c || [])[i];
-          if (checked) { cb.checked = true; if (cb.closest('.newex-field')) cfToggle(cb); }
-        });
-        // Text inputs
-        Array.from(d.querySelectorAll('input[type=text]')).forEach(function(inp, i) {
-          var td = (data.t || [])[i];
-          if (td) {
-            inp.value = typeof td === 'object' ? (td.v || '') : td;
-            if (typeof td === 'object') inp.style.display = td.vis === false ? 'none' : '';
-          }
-        });
-        // MSD dropdowns
-        Array.from(d.querySelectorAll('.msd')).forEach(function(msd, i) {
-          ((data.m || [])[i] || []).forEach(function(v) {
-            var inp = msd.querySelector('input[value="' + v + '"]');
-            if (inp) { inp.checked = true; msdUpdate(inp); }
+          // Toggles first (they reveal conditional inputs)
+          Array.from(d.querySelectorAll('.seg-toggle')).forEach(function(tog, i) {
+            var val = (data.r || [])[i];
+            if (val) {
+              var radio = tog.querySelector('input[value="' + val + '"]');
+              if (radio) { radio.checked = true; newexChange(radio); }
+            }
+          });
+          // Checkboxes
+          Array.from(d.querySelectorAll('input[type=checkbox]')).forEach(function(cb, i) {
+            var checked = (data.c || [])[i];
+            if (checked) { cb.checked = true; if (cb.closest('.newex-field')) cfToggle(cb); }
+          });
+          // Text inputs
+          Array.from(d.querySelectorAll('input[type=text]')).forEach(function(inp, i) {
+            var td = (data.t || [])[i];
+            if (td) {
+              inp.value = typeof td === 'object' ? (td.v || '') : td;
+              if (typeof td === 'object') inp.style.display = td.vis === false ? 'none' : '';
+            }
+          });
+          // MSD dropdowns
+          Array.from(d.querySelectorAll('.msd')).forEach(function(msd, i) {
+            ((data.m || [])[i] || []).forEach(function(v) {
+              var inp = msd.querySelector('input[value="' + v + '"]');
+              if (inp) { inp.checked = true; msdUpdate(inp); }
+            });
           });
         });
       });
