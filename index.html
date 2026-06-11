@@ -616,7 +616,7 @@
 
     .print-toast {
       position: fixed;
-      bottom: 32px;
+      top: 16px;
       left: 50%;
       transform: translateX(-50%);
       background: #333;
@@ -828,9 +828,9 @@
      ============================================================ */
     .toolbar {
       width: 11in;
-      margin: 0 auto 8px;
+      margin: 16px auto 8px;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       gap: 8px;
     }
 
@@ -991,6 +991,7 @@
 <body>
   <!-- Toolbar -->
   <div class="toolbar">
+    <span style="font-size:11px; font-style:italic; color:#888; align-self:center;">Drop a saved sheet anywhere to reload it</span>
     <button class="save-pdf-btn" onclick="doSave()">⬇ Save as PDF</button>
   </div>
 
@@ -1561,6 +1562,16 @@
 
     addRow("ext");
 
+    // ── Designer field persistence ────────────────────────────────
+    var designerEl = document.querySelectorAll('.title .box')[0];
+    if (designerEl) {
+      var saved = localStorage.getItem('mcs_designer');
+      if (saved) designerEl.value = saved;
+      designerEl.addEventListener('input', function() {
+        localStorage.setItem('mcs_designer', designerEl.value);
+      });
+    }
+
     // ── Print validation ──────────────────────────────────────────
 
     function matRowFields(tr) {
@@ -1604,52 +1615,133 @@
     }
 
     function runPrintValidation(proceed) {
-      var extRows = Array.from(document.getElementById('extBody').children);
-      var intRows = Array.from(document.getElementById('intBody').children);
-      var allRows = extRows.concat(intRows);
 
-      // Block: all ext rows are empty — no material defined at all
-      if (extRows.every(isRowEmpty)) {
-        showToast('Please add at least one exterior material to save PDF.');
+      // ── Hard blocks ───────────────────────────────────────────────
+
+      var designerEl = document.querySelectorAll('.title .box')[0];
+      if (!designerEl || !designerEl.value.trim()) {
+        showToast('Designer is required before saving.');
         return;
       }
 
-      var emptyRows = allRows.filter(isRowEmpty);
+      var jobEl = document.getElementById('job-number');
+      var jobVal = jobEl ? jobEl.value.trim() : '';
+      if (!jobVal) {
+        showToast('Job number is required before saving.');
+        return;
+      }
+      if (!/^\d{6}$/.test(jobVal)) {
+        showToast('Job number must be 6 digits.');
+        return;
+      }
 
-      function checkIncomplete(rows) {
-        var inc = rows.filter(isRowIncomplete);
-        if (inc.length > 0) {
-          var n = inc.length;
-          showModal(
-            'Incomplete rows',
-            n + ' material row' + (n > 1 ? 's have' : ' has') + ' some fields left empty. You can print anyway or cancel to review.',
-            'Print Anyway',
-            proceed
-          );
-        } else {
-          proceed();
+      // ── Binding & decoration validation ───────────────────────────
+
+      function doBindingDecorCheck() {
+        var incomplete = [];
+
+        document.querySelectorAll('.brow').forEach(function(card) {
+          var label = card.querySelector('.btype').textContent.trim();
+          var hasIssue = false;
+          card.querySelectorAll('input[type=text], textarea').forEach(function(inp) {
+            if (!inp.value.trim()) hasIssue = true;
+          });
+          if (hasIssue) incomplete.push(label);
+        });
+
+        document.querySelectorAll('.drow').forEach(function(card) {
+          var label = card.querySelector('.btype').textContent.trim();
+          var hasIssue = false;
+          var d = card.querySelector('.dctrls');
+          // Visible text inputs and textareas
+          d.querySelectorAll('input[type=text], textarea').forEach(function(inp) {
+            if (inp.style.display !== 'none' && !inp.value.trim()) hasIssue = true;
+          });
+          // Seg-toggles: one must be selected
+          d.querySelectorAll('.seg-toggle').forEach(function(tog) {
+            if (!tog.querySelector('input:checked')) hasIssue = true;
+          });
+          // MSD dropdowns: must not be at placeholder
+          d.querySelectorAll('.msd').forEach(function(msd) {
+            var val = msd.querySelector('.msd-val').textContent.trim();
+            if (val === (msd.dataset.placeholder || '')) hasIssue = true;
+          });
+          if (hasIssue) incomplete.push(label);
+        });
+
+        if (incomplete.length > 0) {
+          showToast('Please remove or complete all fields on: ' + incomplete.join(', ') + '.');
+          return;
         }
+        doMaterialValidation();
       }
 
-      if (emptyRows.length > 0) {
-        var n = emptyRows.length;
-        showModal(
-          'Empty rows found',
-          n + ' empty row' + (n > 1 ? 's were' : ' was') + ' found. Remove ' + (n > 1 ? 'them' : 'it') + ' and continue, or cancel to review.',
-          'Remove & Print',
-          function() {
-            emptyRows.forEach(function(tr) { tr.remove(); });
-            renumber('ext');
-            renumber('int');
-            var remaining = Array.from(document.getElementById('extBody').children)
-              .concat(Array.from(document.getElementById('intBody').children));
-            checkIncomplete(remaining);
+      function doMaterialValidation() {
+        var extRows = Array.from(document.getElementById('extBody').children);
+        var intRows = Array.from(document.getElementById('intBody').children);
+        var allRows = extRows.concat(intRows);
+
+        if (extRows.every(isRowEmpty)) {
+          showToast('Please add at least one exterior material to proceed.');
+          return;
+        }
+
+        var emptyRows = allRows.filter(isRowEmpty);
+
+        function checkIncomplete(rows) {
+          var inc = rows.filter(isRowIncomplete);
+          if (inc.length > 0) {
+            var n = inc.length;
+            showModal(
+              'Incomplete material rows',
+              n + ' material row' + (n > 1 ? 's have' : ' has') + ' some fields left empty. You can save anyway or cancel to review.',
+              'Save Anyway',
+              proceed
+            );
+          } else {
+            proceed();
           }
-        );
+        }
+
+        if (emptyRows.length > 0) {
+          var n = emptyRows.length;
+          showModal(
+            'Empty rows found',
+            n + ' empty material row' + (n > 1 ? 's were' : ' was') + ' found. Remove ' + (n > 1 ? 'them' : 'it') + ' and continue, or cancel to review.',
+            'Remove & Save',
+            function() {
+              emptyRows.forEach(function(tr) { tr.remove(); });
+              renumber('ext');
+              renumber('int');
+              var remaining = Array.from(document.getElementById('extBody').children)
+                .concat(Array.from(document.getElementById('intBody').children));
+              checkIncomplete(remaining);
+            }
+          );
+          return;
+        }
+
+        checkIncomplete(allRows);
+      }
+
+      // ── Soft warning: key fields ──────────────────────────────────
+
+      var sizeInputs = document.querySelectorAll('.section .frow .box');
+      var keyFields = [
+        { label: 'Property Name', el: document.querySelectorAll('.header-panel .box')[0] },
+        { label: 'Job Description', el: document.querySelectorAll('.header-panel .box')[1] },
+        { label: 'Cover Size',   el: sizeInputs[0] },
+        { label: 'Insert Size',  el: sizeInputs[1] },
+        { label: 'Insert Count', el: sizeInputs[2] }
+      ];
+      var emptyKey = keyFields.filter(function(f) { return f.el && !f.el.value.trim(); });
+
+      if (emptyKey.length > 0) {
+        var names = emptyKey.map(function(f) { return f.label; }).join(', ');
+        showToast('Please fill in: ' + names + '.');
         return;
       }
-
-      checkIncomplete(allRows);
+      doBindingDecorCheck();
     }
 
     // ── State capture ────────────────────────────────────────────
