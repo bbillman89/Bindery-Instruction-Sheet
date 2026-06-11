@@ -791,7 +791,7 @@
       border-radius: 4px;
       box-shadow: 0 3px 10px rgba(0, 0, 0, .12);
       z-index: 100;
-      min-width: 140px;
+      min-width: 100%;
       padding: 4px 0;
     }
 
@@ -1038,9 +1038,13 @@
           <input type="text" class="box sm">
         </div>
 
-        <button class="addbtn" id="sailclothAdd" onclick="showSailcloth(true)">+ Add sailcloth reveal</button>
+        <div class="frow size-sec" id="customBoardRow" style="display:none; margin-bottom: 8px;">
+          <span class="lab">Custom Board Type:</span>
+          <input type="text" class="box grow">
+          <button class="rm" title="Remove" onclick="showCustomBoard(false)" style="margin-left:4px;">&times;</button>
+        </div>
 
-        <div class="frow size-sec" id="sailclothRow" style="display:none; margin-top: 16px;">
+        <div class="frow size-sec" id="sailclothRow" style="display:none; margin-bottom: 8px;">
           <span class="lab">Sailcloth Reveal Size:</span>
           <input type="text" class="box">
           <span class="lab" style="margin-left:8px;">Edge:</span>
@@ -1057,6 +1061,9 @@
           </div>
           <button class="rm" title="Remove" onclick="showSailcloth(false)" style="margin-left:4px;">&times;</button>
         </div>
+
+        <button class="addbtn" id="sailclothAdd" onclick="showSailcloth(true)">+ Add sailcloth reveal</button>
+        <button class="addbtn" id="customBoardAdd" onclick="showCustomBoard(true)">+ Add Custom Board Type</button>
       </div>
 
       <!-- ===== SECTION 3: MATERIAL (dynamic, fillable) ===== -->
@@ -1174,7 +1181,7 @@
 
   <script>
     var TYPES = {
-      ext: ["Bookcloth", "Wood", "Rockboard", "Metal", "Leather", "Acrylic", "4C Litho"],
+      ext: ["Bookcloth", "Wood", "Rockboard", "Metal", "Leather", "Acrylic", "Carbonite", "4C Litho"],
       int: ["Liner", "Panels", "Pockets", "CC Slot", "Pen Loop", "4C Litho"]
     };
     var msdCounter = 0;
@@ -1198,10 +1205,11 @@
       document.querySelectorAll('.msd-panel').forEach(function (p) { p.style.display = 'none'; });
       if (!isOpen) panel.style.display = 'block';
     }
-    function msdUpdate(checkbox) {
-      var msd = checkbox.closest('.msd');
+    function msdUpdate(input) {
+      var msd = input.closest('.msd');
       var checked = Array.from(msd.querySelectorAll('input:checked')).map(function (i) { return i.value; });
       msd.querySelector('.msd-val').textContent = checked.length ? checked.join(', ') : msd.dataset.placeholder;
+      if (input.type === 'radio') msd.querySelector('.msd-panel').style.display = 'none';
     }
     function msdReset(container) {
       container.querySelectorAll('.msd').forEach(function (msd) {
@@ -1260,6 +1268,11 @@
       var n = rows.length;
       document.getElementById(sec + "Count").textContent = n + " " + sec;
     }
+    function showCustomBoard(on) {
+      document.getElementById('customBoardRow').style.display = on ? 'flex' : 'none';
+      document.getElementById('customBoardAdd').style.display = on ? 'none' : 'inline-block';
+      if (!on) document.getElementById('customBoardRow').querySelector('input[type=text]').value = '';
+    }
     function showSailcloth(on) {
       document.getElementById('sailclothRow').style.display = on ? 'flex' : 'none';
       document.getElementById('sailclothAdd').style.display = on ? 'none' : 'inline-block';
@@ -1276,7 +1289,8 @@
       var idx = order.indexOf(key);
       var siblings = container.children;
       for (var i = 0; i < siblings.length; i++) {
-        var sibKey = siblings[i].id.replace(/^[bd]row-/, '');
+        var sib = siblings[i];
+        var sibKey = sib.dataset.key || sib.id.replace(/^[bd]row-/, '');
         if (order.indexOf(sibKey) > idx) {
           container.insertBefore(el, siblings[i]);
           return;
@@ -1292,7 +1306,7 @@
       screw: { label: "Screwposts", fields: ["Size / Color", "Distance Apart", "Application"] },
       clips: { label: "Clips", fields: ["Color"] },
       bands: { label: "Bands", fields: ["Size / Color"] },
-      other: { label: "Other", fields: [""] }
+      other: { label: "Other", fields: [null] }
     };
     function addBinding(key) {
       var cfg = BINDING[key];
@@ -1301,7 +1315,8 @@
       row.id = 'brow-' + key;
       var html = '<span class="btype">' + cfg.label + '</span>';
       cfg.fields.forEach(function (f) {
-        if (f) { html += '<div class="card-field"><span class="lab">' + f + '</span><input type="text" class="box"></div>'; }
+        if (f === null) { html += '<div class="card-field"><textarea class="notebox" style="width:100%;min-height:60px;"></textarea></div>'; }
+        else if (f) { html += '<div class="card-field"><span class="lab">' + f + '</span><input type="text" class="box"></div>'; }
         else { html += '<div class="card-field"><input type="text" class="box"></div>'; }
       });
       html += '<button class="rm" title="Remove" onclick="removeBinding(\'' + key + '\')">&times;</button>';
@@ -1319,21 +1334,19 @@
         label: "Deboss", items: [
           { k: 'f', l: 'Location', w: 'md' },
           { k: 'newex', jobNum: true },
-          { k: 'c', l: 'Blind' },
-          { k: 'cf', l: 'Foil', ph: 'Foil Color' },
-          { k: 'msd', l: 'No Die Type Selected', opts: ['Brass', 'Magnesium', 'River City'] }
+          { k: 'newex', opt1: 'Blind', opt2: 'Foil', condPh: 'Foil Color' },
+          { k: 'msd', l: 'No Die Type Selected', opts: ['Brass', 'Magnesium', 'River City'], single: true }
         ]
       },
       laser: {
         label: "Laser-Cut / Engrave", items: [
           { k: 'f', l: 'Location', w: 'md' },
-          { k: 'c', l: 'Engrave' },
-          { k: 'cf', l: 'Laser-Cut', ph: 'Underlay' }
+          { k: 'newex', opt1: 'Engrave', opt2: 'Laser-Cut', condPh: 'Underlay' }
         ]
       },
       colorprint: {
         label: "Color Print", items: [
-          { k: 'f', l: 'Location', w: 'grow' }
+          { k: 'ta', l: 'Information' }
         ]
       },
       emboss: {
@@ -1350,7 +1363,7 @@
           { k: 'c', l: 'Tip-In' }, { k: 'cf', l: 'Underlay', ph: 'Material' }
         ]
       },
-      other: { label: "Other", items: [{ k: 'grow' }] }
+      other: { label: "Other", items: [{ k: 'ta' }] }
     };
     var _decorUid = 0;
     function addDecor(key) {
@@ -1372,7 +1385,8 @@
         }
         else if (it.k === 'br') { /* no-op in column layout */ }
         else if (it.k === 'grow') { ctrls += '<div class="card-field"><input type="text" class="box"></div>'; }
-        else if (it.k === 'msd') { ctrls += msdHtml(it.l, it.opts); }
+        else if (it.k === 'ta') { ctrls += '<div class="card-field">' + (it.l ? '<span class="lab">' + it.l + '</span>' : '') + '<textarea class="notebox" style="width:100%;min-height:60px;"></textarea></div>'; }
+        else if (it.k === 'msd') { ctrls += msdHtml(it.l, it.opts, it.single); }
         else if (it.k === 'newex') {
           var opt1 = it.opt1 || 'New';
           var opt2 = it.opt2 || 'Existing';
@@ -1669,6 +1683,11 @@
         };
       }
 
+      var cbRow = document.getElementById('customBoardRow');
+      if (cbRow && cbRow.style.display !== 'none') {
+        s.cb = cbRow.querySelector('input[type=text]').value;
+      }
+
       function capRows(id) {
         return Array.from(document.getElementById(id).rows).map(function(tr) {
           var t = tr.querySelectorAll('input[type=text]');
@@ -1685,7 +1704,7 @@
       s.bind = {};
       Object.keys(BINDING).forEach(function(key) {
         var row = document.getElementById('brow-' + key);
-        if (row) s.bind[key] = Array.from(row.querySelectorAll('input[type=text]')).map(function(i) { return i.value; });
+        if (row) s.bind[key] = Array.from(row.querySelectorAll('input[type=text], textarea')).map(function(i) { return i.value; });
       });
 
       s.decor = {};
@@ -1695,7 +1714,7 @@
         s.decor[key] = rows.map(function(row) {
           var d = row.querySelector('.dctrls');
           return {
-            t: Array.from(d.querySelectorAll('input[type=text]')).map(function(i) {
+            t: Array.from(d.querySelectorAll('input[type=text], textarea')).map(function(i) {
               return { v: i.value, vis: i.style.display !== 'none' };
             }),
             c: Array.from(d.querySelectorAll('input[type=checkbox]')).map(function(c) { return c.checked; }),
@@ -1748,6 +1767,13 @@
         showSailcloth(false);
       }
 
+      if (s.cb !== undefined) {
+        showCustomBoard(true);
+        document.getElementById('customBoardRow').querySelector('input[type=text]').value = s.cb || '';
+      } else {
+        showCustomBoard(false);
+      }
+
       function restoreRows(id, rows) {
         var tb = document.getElementById(id);
         tb.innerHTML = '';
@@ -1774,7 +1800,7 @@
       Object.keys(s.bind || {}).forEach(function(key) {
         if (!BINDING[key]) return;
         addBinding(key);
-        var inputs = document.getElementById('brow-' + key).querySelectorAll('input[type=text]');
+        var inputs = document.getElementById('brow-' + key).querySelectorAll('input[type=text], textarea');
         (s.bind[key] || []).forEach(function(v, i) { if (inputs[i]) inputs[i].value = v; });
       });
 
@@ -1801,8 +1827,8 @@
             var checked = (data.c || [])[i];
             if (checked) { cb.checked = true; if (cb.closest('.newex-field')) cfToggle(cb); }
           });
-          // Text inputs
-          Array.from(d.querySelectorAll('input[type=text]')).forEach(function(inp, i) {
+          // Text inputs and textareas
+          Array.from(d.querySelectorAll('input[type=text], textarea')).forEach(function(inp, i) {
             var td = (data.t || [])[i];
             if (td) {
               inp.value = typeof td === 'object' ? (td.v || '') : td;
