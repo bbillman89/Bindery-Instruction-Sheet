@@ -134,9 +134,9 @@
     }
 
     /* Stage toggle: color-coded by selected state */
-    body:has(#stage-proof:checked)      #stageToggle label[for="stage-proof"]      { background: #c0392b; color: #fff; border-color: #c0392b; }
-    body:has(#stage-prototype:checked)  #stageToggle label[for="stage-prototype"]  { background: #e6b800; color: #000; border-color: #e6b800; }
-    body:has(#stage-production:checked) #stageToggle label[for="stage-production"] { background: #27ae60; color: #fff; border-color: #27ae60; }
+    body:has(#stage-proof:checked)      #stageToggle label[for="stage-proof"]      { background: #c0392b; color: #fff }
+    body:has(#stage-prototype:checked)  #stageToggle label[for="stage-prototype"]  { background: #e6b800; color: #000; }
+    body:has(#stage-production:checked) #stageToggle label[for="stage-production"] { background: #27ae60; color: #fff; }
 
     /* Tooltip icon next to non-standard label */
     .ns-info {
@@ -566,6 +566,12 @@
       margin: 12px 0 0;
     }
 
+    .mat-group + .mat-group {
+      border-top: 1px solid var(--section-header-band);
+      padding-top: 10px;
+      margin-top: 4px;
+    }
+
     .mat-group th {
       color: var(--ink);
     }
@@ -667,6 +673,23 @@
     }
 
     .mat-decor-dismiss:hover { opacity: 1; }
+
+    /* Function detail card inputs — override .msec's transparent/borderless table styles */
+    #fnCards input[type=text].box {
+      border: 1.5px solid var(--boxborder);
+      background: #fff;
+      width: 100%;
+    }
+    #fnCards input[type=text].box:hover  { border-color: var(--header-bar); }
+    #fnCards input[type=text].box:focus  {
+      outline: none;
+      border-color: var(--header-bar);
+      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+    }
+    /* MSD inside fn cards: match brow style, fill full width */
+    #fnCards .fn-msd-wrap { width: 100%; }
+    #fnCards .fn-msd-wrap .msd { width: 100%; }
+    #fnCards .fn-msd-wrap .msd-btn { border: solid 1px var(--boxborder); width: 100%; }
 
     .mat-decor-btn {
       border: none;
@@ -1293,7 +1316,7 @@
         <div class="stage-banner" aria-hidden="true">
           <span class="sb-proof">For Proof Only</span>
           <span class="sb-prototype">For Prototype Only</span>
-          <span class="sb-production">PRODUCTION TICKET</span>
+          <span class="sb-production">For Production</span>
         </div>
       </div>
 
@@ -1362,7 +1385,9 @@
             <tbody id="intBody"></tbody>
           </table>
           <button class="addbtn" onclick="addRow('int')">+ Add Interior Material</button>
+          <button class="addbtn" id="ccIntAdd" onclick="addStandardCCInterior()" style="display:inline-block;">+ Add Standard CC Interior</button>
         </div>
+        <div id="fnCards" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;"></div>
       </div>
 
       <!-- ===== SECTION 4: CUSTOMIZATIONS (sailcloth + custom board) ===== -->
@@ -1516,6 +1541,103 @@
       var checked = Array.from(msd.querySelectorAll('input:checked')).map(function (i) { return i.value; });
       msd.querySelector('.msd-val').textContent = checked.length ? checked.join(', ') : msd.dataset.placeholder;
       if (input.type === 'radio') msd.querySelector('.msd-panel').style.display = 'none';
+      if (msd.closest('#intBody')) syncFunctionCards();
+    }
+
+    /* ── Function detail cards ─────────────────────────────────────
+       Appear below the material tables when interior functions are selected.
+    ─────────────────────────────────────────────────────────────── */
+    var FN_CARD_CONFIG = {
+      'Liner':    [
+        { id: 'location', label: 'Location' },
+        { id: 'size',     label: 'Size' }
+      ],
+      'Panels':   [
+        { id: 'location', label: 'Location' },
+        { id: 'size',     label: 'Size' }
+      ],
+      'Pockets':  [
+        { id: 'size',     label: 'Size' },
+        { id: 'type',     label: 'Type', type: 'msd', placeholder: 'None Selected', options: ['Angled', 'Flat', 'CC'] },
+        { id: 'location', label: 'Location' }
+      ],
+      'CC Slot':  [
+        { id: 'location', label: 'Location' }
+      ],
+      'Pen Loop': [
+        { id: 'location', label: 'Location' }
+      ]
+    };
+
+    var FN_CARD_ORDER = ['Liner', 'Panels', 'Pockets', 'CC Slot', 'Pen Loop'];
+    var _intRowId = 0;
+
+    function syncFunctionCards() {
+      var container = document.getElementById('fnCards');
+      var rowEls = Array.from(document.querySelectorAll('#intBody tr'));
+
+      // Build desired list: for each fn (in order), collect rows that have it checked
+      var desired = [];
+      FN_CARD_ORDER.forEach(function(fn) {
+        rowEls.forEach(function(tr) {
+          var msd = tr.querySelector('.msd');
+          if (!msd) return;
+          var checked = Array.from(msd.querySelectorAll('input:checked')).map(function(i) { return i.value; });
+          if (checked.indexOf(fn) !== -1) {
+            desired.push({ rowId: tr.dataset.rowId, fn: fn });
+          }
+        });
+      });
+
+      // Build desired key set
+      var desiredKeys = {};
+      desired.forEach(function(d) { desiredKeys[d.fn + '::' + d.rowId] = true; });
+
+      // Remove stale cards
+      Array.from(container.querySelectorAll('.brow[data-fn][data-row-id]')).forEach(function(card) {
+        if (!desiredKeys[card.dataset.fn + '::' + card.dataset.rowId]) card.remove();
+      });
+
+      // Add missing cards
+      desired.forEach(function(d) {
+        if (container.querySelector('.brow[data-fn="' + d.fn + '"][data-row-id="' + d.rowId + '"]')) return;
+        var cfg = FN_CARD_CONFIG[d.fn];
+        if (!cfg) return;
+
+        var html = '<span class="btype">' + d.fn + '</span>';
+        cfg.forEach(function(f) {
+          html += '<div class="card-field">';
+          if (f.label) html += '<span class="lab">' + f.label + '</span>';
+          if (f.type === 'msd') {
+            html += '<div class="fn-msd-wrap" data-fn-field="' + f.id + '">' +
+              msdHtml(f.placeholder, f.options, true) + '</div>';
+          } else {
+            html += '<input type="text" class="box" data-fn-field="' + f.id + '" style="width:100%;">';
+          }
+          html += '</div>';
+        });
+
+        var card = document.createElement('div');
+        card.className = 'brow';
+        card.dataset.fn = d.fn;
+        card.dataset.rowId = d.rowId;
+        card.innerHTML = html;
+        container.appendChild(card);
+      });
+
+      // Sort cards into desired order
+      desired.forEach(function(d) {
+        var card = container.querySelector('.brow[data-fn="' + d.fn + '"][data-row-id="' + d.rowId + '"]');
+        if (card) container.appendChild(card);
+      });
+
+      // Renumber within each fn type
+      FN_CARD_ORDER.forEach(function(fn) {
+        var cards = Array.from(container.querySelectorAll('.brow[data-fn="' + fn + '"]'));
+        cards.forEach(function(card, i) {
+          card.querySelector('.btype').textContent = cards.length > 1 ? fn + ' ' + (i + 1) : fn;
+        });
+      });
     }
     function msdReset(container) {
       container.querySelectorAll('.msd').forEach(function (msd) {
@@ -1721,6 +1843,7 @@
           '<td class="colrm"><button class="rm" title="Remove" onclick="removeRow(this,\'ext\')">&times;</button></td>';
       } else {
         /* Interior: Category col has no header; Function col is a multi-select */
+        tr.dataset.rowId = 'ir' + (_intRowId++);
         tr.innerHTML =
           '<td class="num"></td>' +
           '<td>' + catHtml + '</td>' +
@@ -1744,6 +1867,7 @@
       }
       btn.closest("tr").remove();
       renumber(sec);
+      if (sec === 'int') syncFunctionCards();
     }
     function renumber(sec) {
       var rows = document.getElementById(sec + "Body").children;
@@ -1755,6 +1879,30 @@
       document.getElementById('customBoardRow').style.display = on ? 'flex' : 'none';
       document.getElementById('customBoardAdd').style.display = on ? 'none' : 'inline-block';
       if (!on) document.getElementById('customBoardRow').querySelector('input[type=text]').value = '';
+    }
+
+    function addStandardCCInterior() {
+      if (document.getElementById('ccIntCard')) return; // already present
+      var card = document.createElement('div');
+      card.className = 'brow';
+      card.id = 'ccIntCard';
+      card.dataset.ccInt = '1';
+      card.innerHTML =
+        '<span class="btype">Standard CC Interior</span>' +
+        '<div class="card-field" style="font-size:11px; color:var(--ink); line-height:1.5;">' +
+          'Black Lexide Panel<br>' +
+          'Regular Black Angled Pocket<br>' +
+          'CC Slot' +
+        '</div>' +
+        '<button class="rm" title="Remove" onclick="removeStandardCCInterior()">&times;</button>';
+      document.getElementById('fnCards').appendChild(card);
+      document.getElementById('ccIntAdd').style.display = 'none';
+    }
+
+    function removeStandardCCInterior() {
+      var card = document.getElementById('ccIntCard');
+      if (card) card.remove();
+      document.getElementById('ccIntAdd').style.display = 'inline-block';
     }
     function showSailcloth(on) {
       document.getElementById('sailclothRow').style.display = on ? 'flex' : 'none';
@@ -2137,6 +2285,11 @@
         var incomplete = [];
 
         document.querySelectorAll('.brow').forEach(function(card) {
+          // Skip hidden cards (sailcloth/customboard when not added)
+          if (card.style.display === 'none') return;
+          // Skip fn detail cards (supplementary, not required) and Standard CC Interior
+          if (card.closest('#fnCards') || card.id === 'ccIntCard') return;
+
           var label = card.querySelector('.btype').textContent.trim();
           var hasIssue = false;
           card.querySelectorAll('input[type=text], textarea').forEach(function(inp) {
@@ -2177,7 +2330,11 @@
         var intRows = Array.from(document.getElementById('intBody').children);
         var allRows = extRows.concat(intRows);
 
-        if (extRows.every(isRowEmpty)) {
+        var hasDefinedExt = extRows.some(function(tr) {
+          var cat = tr.querySelector('.cat-select');
+          return cat && cat.value !== '';
+        });
+        if (!hasDefinedExt) {
           showToast('Please add at least one exterior material to proceed.');
           return;
         }
@@ -2309,6 +2466,19 @@
       s.ext = capRows('extBody');
       s.int = capRows('intBody');
 
+      // fn cards: capture as ordered array matching card display order
+      s.fnCards = Array.from(document.querySelectorAll('#fnCards .brow[data-fn]')).map(function(card) {
+        var data = {};
+        card.querySelectorAll('input[data-fn-field]').forEach(function(inp) {
+          data[inp.dataset.fnField] = inp.value;
+        });
+        card.querySelectorAll('.fn-msd-wrap[data-fn-field]').forEach(function(wrap) {
+          data[wrap.dataset.fnField] = Array.from(wrap.querySelectorAll('input:checked')).map(function(i) { return i.value; });
+        });
+        return { fn: card.dataset.fn, data: data };
+      });
+      s.ccInt = !!document.getElementById('ccIntCard');
+
       s.bind = {};
       Object.keys(BINDING).forEach(function(key) {
         var row = document.getElementById('brow-' + key);
@@ -2388,6 +2558,9 @@
       } else {
         showCustomBoard(false);
       }
+
+      removeStandardCCInterior();
+      if (s.ccInt) addStandardCCInterior();
 
       function restoreRows(id, rows) {
         var tb = document.getElementById(id);
@@ -2469,6 +2642,27 @@
       }
       restoreRows('extBody', s.ext || []);
       restoreRows('intBody', s.int || []);
+
+      // fn cards already created by msdUpdate calls above; sync once more then populate values
+      syncFunctionCards();
+      var fnCardEls = Array.from(document.querySelectorAll('#fnCards .brow[data-fn]'));
+      (s.fnCards || []).forEach(function(entry, i) {
+        var card = fnCardEls[i];
+        if (!card || card.dataset.fn !== entry.fn) return;
+        Object.keys(entry.data || {}).forEach(function(field) {
+          var inp = card.querySelector('input[data-fn-field="' + field + '"]');
+          if (inp) { inp.value = entry.data[field]; return; }
+          var wrap = card.querySelector('.fn-msd-wrap[data-fn-field="' + field + '"]');
+          if (wrap) {
+            var vals = Array.isArray(entry.data[field]) ? entry.data[field] : [entry.data[field]];
+            vals.forEach(function(v) {
+              if (!v) return;
+              var msdInp = wrap.querySelector('input[value="' + v + '"]');
+              if (msdInp) { msdInp.checked = true; msdUpdate(msdInp); }
+            });
+          }
+        });
+      });
 
       document.getElementById('bindingRows').innerHTML = '';
       Object.keys(BINDING).forEach(function(k) { document.getElementById('badd-' + k).style.display = 'inline-block'; });

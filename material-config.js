@@ -41,6 +41,7 @@ var MATERIAL_CONFIG = {
   ─────────────────────────────────────────────────────────────────── */
   categories: [
     'Bookcloth',
+    'Linen/Paper',
     'Wood',
     'Rockboard',
     'Metal',
@@ -67,15 +68,9 @@ var MATERIAL_CONFIG = {
           placeholder: 'Vendor',
           autocomplete: [
             'Majilite',
-            'Holliston',
             'LBS',
             'Fifield',
             'KFL Synt3',
-            'Neenah',
-            'Pointe International',
-            'PVC Tech',
-            'Koroseal',
-            'Wolf Gordon'
           ]
         },
         {
@@ -90,6 +85,35 @@ var MATERIAL_CONFIG = {
           id: 'decoration',
           placeholder: 'Decoration',
           type: 'decoration'
+        }
+      ]
+    },
+    'Linen/Paper': {
+      interior: true,
+      printTemplate: function(v) {
+        return [v.vendor, v.productLine, v.color].filter(Boolean).join(' ');
+      },
+      inputs: [
+        {
+          id: 'vendor',
+          placeholder: 'Vendor',
+          autocomplete: [
+            'Holliston',
+            'LBS',
+            'Neenah',
+            'Pointe International',
+            'PVC Tech',
+            'Koroseal',
+            'Wolf Gordon'
+          ]
+        },
+        {
+          id: 'productLine',
+          placeholder: 'Product Line'
+        },
+        {
+          id: 'color',
+          placeholder: 'Color'
         }
       ]
     },
@@ -269,11 +293,10 @@ var MATERIAL_CONFIG = {
     '4C Litho': {
       interior: true,
       printTemplate: function(v) {
-        return [v.type, v.weight, v.finish].filter(Boolean).join(' ');
+        return [v.type, v.finish].filter(Boolean).join(' / ');
       },
       inputs: [
         { id: 'type',   placeholder: 'Type'   },
-        { id: 'weight', placeholder: 'Weight' },
         { id: 'finish', placeholder: 'Finish' }
       ]
     },
