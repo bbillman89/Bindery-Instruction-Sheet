@@ -47,7 +47,8 @@ var MATERIAL_CONFIG = {
     'Leather',
     'Acrylic',
     'Carbonite',
-    '4C Litho'
+    '4C Litho',
+    'Other'
   ],
 
   /* ─── FIELD DEFINITIONS ──────────────────────────────────────────
@@ -190,6 +191,7 @@ var MATERIAL_CONFIG = {
           placeholder: 'Finish',
           autocomplete: [
             'Plain',
+            'Brushed',
             'Regular Dip',
             'Dip with Patina'
           ]
@@ -198,7 +200,7 @@ var MATERIAL_CONFIG = {
     },
 
     Leather: {
-      interior: true,
+      interior: false,
       printTemplate: function(v) {
         return [v.productLine, v.weight, v.color, v.id].filter(Boolean).join(' ');
       },
@@ -246,24 +248,21 @@ var MATERIAL_CONFIG = {
     Acrylic: {
       interior: false,
       printTemplate: function(v) {
-        return [v.field1, v.field2].filter(Boolean).join(' ');
+        return [v.type, v.color].filter(Boolean).join(' ');
       },
       inputs: [
-        /* TODO: confirm field names with team */
-        { id: 'field1', placeholder: '—' },
-        { id: 'field2', placeholder: '—' }
+        { id: 'type', placeholder: 'Type' },
+        { id: 'color', placeholder: 'Color' }
       ]
     },
 
     Carbonite: {
       interior: false,
       printTemplate: function(v) {
-        return [v.field1, v.field2].filter(Boolean).join(' ');
+        return [v.carbonite];
       },
       inputs: [
-        /* TODO: confirm field names with team */
-        { id: 'field1', placeholder: '—' },
-        { id: 'field2', placeholder: '—' }
+        { id: 'carbonite', placeholder: 'Carbonite' },
       ]
     },
 
@@ -277,6 +276,16 @@ var MATERIAL_CONFIG = {
         { id: 'weight', placeholder: 'Weight' },
         { id: 'finish', placeholder: 'Finish' }
       ]
-    }
+    },
+
+    Other: {
+      interior: true,
+      printTemplate: function(v) {
+        return [v.other];
+      },
+      inputs: [
+        { id: 'other', placeholder: 'Describe the Material' },
+      ]
+    },
   }
 };
