@@ -365,15 +365,21 @@
       text-align: left;
       padding: 4px 8px;
       border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
       text-transform: uppercase;
     }
+
+    .msec th:last-child { border-right: none; }
 
     .msec td {
       padding: 0px;
       border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
       vertical-align: middle;
       transition: background-color 0.1s ease;
     }
+
+    .msec td:last-child { border-right: none; }
 
 
 
@@ -489,6 +495,127 @@
       flex-direction: column;
       gap: 4px;
       width: 100%;
+    }
+
+    /* ============================================================
+     CATEGORY SELECT  (material table first column)
+     ============================================================ */
+    .cat-select {
+      width: 100%;
+      border: 1.5px solid transparent;
+      background: transparent;
+      padding: 5px 6px;
+      font: inherit;
+      font-size: 12px;
+      border-radius: 3px;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+      cursor: pointer;
+      color: var(--ink);
+    }
+
+    .cat-select:hover {
+      border-color: var(--header-bar);
+    }
+
+    .cat-select:focus {
+      outline: none;
+      background: #fff;
+      border-color: var(--header-bar);
+      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+    }
+
+    /* ============================================================
+     MATERIAL INPUTS  (dynamic fields in center column)
+     ============================================================ */
+    .material-inputs {
+      display: flex;
+      align-items: stretch;
+      width: 100%;        /* fill the table cell */
+      gap: 0;
+      min-width: 0;
+    }
+
+    /* Each input is separated by a hairline divider */
+    .material-inputs input[type=text] {
+      flex: 1;
+      min-width: 48px;
+      border-right: 1px solid var(--line) !important;
+      border-radius: 0 !important;
+    }
+
+    .material-inputs input[type=text]:last-child,
+    .material-inputs .mat-decor-field:last-child input[type=text] {
+      border-right: none !important;
+    }
+
+    /* Decoration toggle field */
+    .mat-decor-field {
+      display: flex;
+      align-items: center;
+      border-right: 1px solid var(--line);
+    }
+
+    .mat-decor-field:last-child {
+      border-right: none;
+    }
+
+    /* When decoration is revealed, the input inside should flex-grow */
+    .mat-decor-field:has(.mat-decor-input:not([style*="display:none"]):not([style*="display: none"])) {
+      flex: 1;
+    }
+
+    .mat-decor-btn {
+      border: none;
+      background: #faf3d6;
+      color: var(--ink);
+      font: inherit;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      letter-spacing: .02em;
+      transition: background-color 0.15s ease;
+      height: 100%;
+    }
+
+    .mat-decor-btn:hover {
+      background: #f0e4b0;
+    }
+
+    .mat-decor-input {
+      flex: 1;
+      min-width: 80px;
+      border-right: none !important;
+    }
+
+    /* Print span — hidden on screen, shown on print in place of inputs */
+    .mat-print {
+      display: none;
+      font-size: 12px;
+      padding: 5px 6px;
+      color: var(--ink);
+    }
+
+    @media print {
+      .cat-select {
+        background: transparent;
+        border-color: transparent;
+        box-shadow: none;
+        appearance: none;
+        -webkit-appearance: none;
+        padding-right: 0;
+      }
+      .mat-decor-btn {
+        display: none !important;
+      }
+      /* Hide inputs; show pre-formatted print span instead */
+      .material-inputs {
+        display: none !important;
+      }
+      .mat-print {
+        display: inline;
+      }
     }
 
     /* ============================================================
@@ -746,6 +873,12 @@
 
     .msec td .msd-btn {
       width: 100%;
+    }
+
+    /* Interior Function MSD: full-cell dropdown — no side borders, match table font */
+    #intBody td .msd-btn {
+      border-width: 0;
+      font-size: 12px;
     }
 
     .msec td:has(.rm){
@@ -1008,7 +1141,7 @@
 
         <div class="input-wrap">
           <span class="lab">Job Number:</span>
-          <input type="text" id="job-number" class="box sm">
+          <input type="text" id="job-number" class="box sm" inputmode="numeric" pattern="\d{1,6}" maxlength="6" placeholder="000000" oninput="this.value=this.value.replace(/\D/g,'')">
         </div>
       </div>
     </div>
@@ -1078,28 +1211,28 @@
       </div>
       <div class="msec">
         <div class="mat-group">
-        <table>
-          <thead>
-            <tr>
-              <th class="num">#</th>
-              <th style="width:300px;">Exterior Material / Color</th>
-              <th>Type</th>
-              <th style="width:170px;">Function</th>
-              <th class="colrm" style="width:26px;"></th>
-            </tr>
-          </thead>
-          <tbody id="extBody"></tbody>
-        </table>
-        <button class="addbtn" onclick="addRow('ext')">+ Add exterior material</button>
-      </div>
+          <table>
+            <thead>
+              <tr>
+                <th class="num">#</th>
+                <th style="width:130px;">Category</th>
+                <th>Material</th>
+                <th style="width:180px;">Function</th>
+                <th class="colrm" style="width:26px;"></th>
+              </tr>
+            </thead>
+            <tbody id="extBody"></tbody>
+          </table>
+          <button class="addbtn" onclick="addRow('ext')">+ Add exterior material</button>
+        </div>
         <div class="mat-group">
           <table>
             <thead>
               <tr>
                 <th class="num">#</th>
-                <th style="width:300px;">interior Material / Color</th>
-                <th>Type</th>
-                <th style="width:170px;">Function</th>
+                <th style="width:130px;">Category</th>
+                <th>Material</th>
+                <th style="width:180px;">Function</th>
                 <th class="colrm" style="width:26px;"></th>
               </tr>
             </thead>
@@ -1159,6 +1292,16 @@
 
   </div>
 
+  <!-- Ext Function autocomplete options -->
+  <datalist id="dl-ext-function">
+    <option value="Full Wrap">
+    <option value="Full Board">
+    <option value="Front Cover">
+    <option value="Back Cover">
+    <option value="Front & Back Cover">
+    <option value="Sailcloth">
+  </datalist>
+
   <!-- Drop overlay -->
   <div id="dropOverlay" class="drop-overlay" style="display:none;">
     <div class="drop-overlay-box">
@@ -1180,11 +1323,8 @@
   </div>
   <div id="printToast" class="print-toast" style="display:none;"></div>
 
+  <script src="material-config.js"></script>
   <script>
-    var TYPES = {
-      ext: ["Bookcloth", "Wood", "Rockboard", "Metal", "Leather", "Acrylic", "Carbonite", "4C Litho"],
-      int: ["Liner", "Panels", "Pockets", "CC Slot", "Pen Loop", "4C Litho"]
-    };
     var msdCounter = 0;
     function msdHtml(placeholder, options, single) {
       var grp = single ? 'msd-' + (msdCounter++) : null;
@@ -1240,24 +1380,148 @@
         document.querySelectorAll('.msd-panel').forEach(function (p) { p.style.display = 'none'; });
       }
     });
+    /* ── Material config helpers ───────────────────────────────── */
+
+    /** Build all shared <datalist> elements once at page load. */
+    function initDataLists() {
+      var frag = document.createDocumentFragment();
+      MATERIAL_CONFIG.categories.forEach(function(cat) {
+        var cfg = MATERIAL_CONFIG.fields[cat];
+        if (!cfg) return;
+        (cfg.inputs || []).forEach(function(field) {
+          if (!field.autocomplete) return;
+          var dlId = dlIdFor(cat, field.id);
+          if (document.getElementById(dlId)) return;
+          var dl = document.createElement('datalist');
+          dl.id = dlId;
+          field.autocomplete.forEach(function(opt) {
+            var o = document.createElement('option');
+            o.value = opt;
+            dl.appendChild(o);
+          });
+          frag.appendChild(dl);
+        });
+      });
+      document.body.appendChild(frag);
+    }
+
+    function dlIdFor(cat, fieldId) {
+      return 'dl-' + cat.replace(/\s+/g, '-').toLowerCase() + '-' + fieldId;
+    }
+
+    /** Build the category <select> HTML for a section.
+     *  Interior only shows categories with interior: true. */
+    function buildCategorySelectHtml(sec) {
+      var cats = MATERIAL_CONFIG.categories.filter(function(cat) {
+        if (sec !== 'int') return true;
+        var cfg = MATERIAL_CONFIG.fields[cat];
+        return cfg && cfg.interior;
+      });
+      var opts = '<option value="">—</option>';
+      cats.forEach(function(cat) {
+        opts += '<option value="' + cat + '">' + cat + '</option>';
+      });
+      return '<select class="cat-select" onchange="updateMaterialCell(this)">' + opts + '</select>';
+    }
+
+    /** Rebuild the Material cell when a category is chosen. */
+    function updateMaterialCell(select) {
+      var tr = select.closest('tr');
+      var cat = select.value;
+      var cell = tr.querySelector('.col-material-cell');
+      var cfg = cat ? MATERIAL_CONFIG.fields[cat] : null;
+
+      var html = '<div class="material-inputs">';
+      if (cfg) {
+        (cfg.inputs || []).forEach(function(field) {
+          if (field.type === 'decoration') {
+            html += '<div class="mat-decor-field">' +
+              '<button type="button" class="mat-decor-btn" onclick="toggleDecoration(this)">+ Decoration</button>' +
+              '<input type="text" class="mat-decor-input" data-field-id="' + field.id + '" placeholder="Decoration" style="display:none;">' +
+              '</div>';
+          } else {
+            var dlId = field.autocomplete ? dlIdFor(cat, field.id) : null;
+            html += '<input type="text" placeholder="' + field.placeholder + '" data-field-id="' + field.id + '"' +
+              (dlId ? ' list="' + dlId + '"' : '') + '>';
+          }
+        });
+      }
+      html += '</div><span class="mat-print"></span>';
+      cell.innerHTML = html;
+
+      // Bind input events so the print span updates live as the user types
+      cell.querySelectorAll('.material-inputs input[type=text]').forEach(function(inp) {
+        inp.addEventListener('input', function() { updatePrintSpan(tr); });
+      });
+      updatePrintSpan(tr);
+    }
+
+    /** Update the hidden print span for a material row from the current field values. */
+    function updatePrintSpan(tr) {
+      var catSelect = tr.querySelector('.cat-select');
+      var cat = catSelect ? catSelect.value : '';
+      var span = tr.querySelector('.mat-print');
+      if (!span) return;
+
+      var cfg = cat ? MATERIAL_CONFIG.fields[cat] : null;
+      if (!cfg || !cfg.printTemplate) { span.textContent = ''; return; }
+
+      // Collect values by data-field-id; skip hidden inputs (decoration not yet revealed)
+      var values = {};
+      tr.querySelectorAll('.material-inputs input[type=text]').forEach(function(inp) {
+        var id = inp.dataset.fieldId;
+        if (id && inp.style.display !== 'none') values[id] = inp.value.trim();
+      });
+
+      try { span.textContent = cfg.printTemplate(values); }
+      catch(e) { span.textContent = ''; }
+    }
+
+    /** Reveal the decoration text input when the button is clicked. */
+    function toggleDecoration(btn) {
+      var field = btn.closest('.mat-decor-field');
+      btn.style.display = 'none';
+      var input = field.querySelector('.mat-decor-input');
+      input.style.display = '';
+      input.focus();
+      // Now that decoration is visible, re-render the print span
+      var tr = btn.closest('tr');
+      if (tr) updatePrintSpan(tr);
+    }
+
     function addRow(sec) {
       var tb = document.getElementById(sec + "Body");
       var tr = document.createElement("tr");
-      tr.innerHTML =
-        '<td class="num"></td>' +
-        '<td><input type="text"></td>' +
-        '<td>' + msdHtml('', TYPES[sec], sec === 'ext') + '</td>' +
-        '<td><input type="text"></td>' +
-        '<td class="colrm"><button class="rm" title="Remove" onclick="removeRow(this,\'' + sec + '\')">&times;</button></td>';
+      var catHtml = buildCategorySelectHtml(sec);
+
+      if (sec === 'ext') {
+        tr.innerHTML =
+          '<td class="num"></td>' +
+          '<td>' + catHtml + '</td>' +
+          '<td class="col-material-cell"><div class="material-inputs"></div><span class="mat-print"></span></td>' +
+          '<td><input type="text" class="fn-input" list="dl-ext-function"></td>' +
+          '<td class="colrm"><button class="rm" title="Remove" onclick="removeRow(this,\'ext\')">&times;</button></td>';
+      } else {
+        /* Interior: Category col has no header; Function col is a multi-select */
+        tr.innerHTML =
+          '<td class="num"></td>' +
+          '<td>' + catHtml + '</td>' +
+          '<td class="col-material-cell"><div class="material-inputs"></div><span class="mat-print"></span></td>' +
+          '<td>' + msdHtml('Function', MATERIAL_CONFIG.interiorFunctions, false) + '</td>' +
+          '<td class="colrm"><button class="rm" title="Remove" onclick="removeRow(this,\'int\')">&times;</button></td>';
+      }
+
       tb.appendChild(tr);
       renumber(sec);
     }
     function removeRow(btn, sec) {
       var tb = document.getElementById(sec + "Body");
       if (sec === 'ext' && tb.children.length <= 1) {
+        // Clear the last ext row rather than removing it
         var tr = btn.closest('tr');
+        var catSelect = tr.querySelector('.cat-select');
+        if (catSelect) { catSelect.value = ''; updateMaterialCell(catSelect); }
         tr.querySelectorAll('input[type=text]').forEach(function(i) { i.value = ''; });
-        msdReset(tr);
         return;
       }
       btn.closest("tr").remove();
@@ -1560,6 +1824,7 @@
       }
     });
 
+    initDataLists();
     addRow("ext");
 
     // ── Designer field persistence ────────────────────────────────
@@ -1575,11 +1840,22 @@
     // ── Print validation ──────────────────────────────────────────
 
     function matRowFields(tr) {
-      var texts = Array.from(tr.querySelectorAll('td input[type=text]'))
+      var cat = tr.querySelector('.cat-select');
+      var catVal = cat ? cat.value : '';
+
+      // Only count visible material inputs (excludes hidden decoration input)
+      var matVals = Array.from(tr.querySelectorAll('.material-inputs input[type=text]'))
+        .filter(function(i) { return i.style.display !== 'none'; })
         .map(function(i) { return i.value.trim(); });
-      var msd = tr.querySelector('.msd-val');
-      var type = msd ? msd.textContent.trim() : '';
-      return texts.concat([type]);
+
+      // Ext: function is a text input; Int: function is an MSD multi-select
+      var fnInput = tr.querySelector('.fn-input');
+      var fnMsd   = tr.querySelector('td .msd');
+      var fnVal = fnInput
+        ? fnInput.value.trim()
+        : (fnMsd ? (fnMsd.querySelector('.msd-val').textContent.trim() !== fnMsd.dataset.placeholder ? 'selected' : '') : '');
+
+      return [catVal].concat(matVals).concat([fnVal]);
     }
 
     function isRowEmpty(tr) {
@@ -1781,13 +2057,31 @@
       }
 
       function capRows(id) {
+        var sec = id.replace('Body', '');
         return Array.from(document.getElementById(id).rows).map(function(tr) {
-          var t = tr.querySelectorAll('input[type=text]');
-          return {
-            m:  t[0] ? t[0].value : '',
-            t:  Array.from(tr.querySelectorAll('.msd input:checked')).map(function(i) { return i.value; }),
-            fn: t[1] ? t[1].value : ''
-          };
+          var catSelect = tr.querySelector('.cat-select');
+          var cat = catSelect ? catSelect.value : '';
+
+          var mat = Array.from(tr.querySelectorAll('.material-inputs input[type=text]'))
+            .filter(function(i) { return i.style.display !== 'none'; })
+            .map(function(i) { return i.value; });
+
+          var decorInput = tr.querySelector('.mat-decor-input');
+          var decor = (decorInput && decorInput.style.display !== 'none') ? decorInput.value : null;
+
+          // Ext: text input; Int: MSD multi-select
+          var fn = '', fnArr = [];
+          if (sec === 'ext') {
+            var fnInput = tr.querySelector('.fn-input');
+            fn = fnInput ? fnInput.value : '';
+          } else {
+            var fnMsd = tr.querySelector('td .msd');
+            fnArr = fnMsd
+              ? Array.from(fnMsd.querySelectorAll('input:checked')).map(function(i) { return i.value; })
+              : [];
+          }
+
+          return { cat: cat, mat: mat, decor: decor, fn: fn, fnArr: fnArr };
         });
       }
       s.ext = capRows('extBody');
@@ -1870,17 +2164,74 @@
         var tb = document.getElementById(id);
         tb.innerHTML = '';
         var sec = id.replace('Body', '');
-        (rows.length > 0 ? rows : (sec === 'ext' ? [{ m: '', t: [], fn: '' }] : [])).forEach(function(rd) {
+        var rowData = rows && rows.length > 0
+          ? rows
+          : (sec === 'ext' ? [{ cat: '', mat: [], decor: null, fn: '', fnArr: [] }] : []);
+
+        rowData.forEach(function(rd) {
           addRow(sec);
           var tr = tb.lastElementChild;
-          var t = tr.querySelectorAll('input[type=text]');
-          if (t[0]) t[0].value = rd.m  || '';
-          if (t[1]) t[1].value = rd.fn || '';
-          var msd = tr.querySelector('.msd');
-          if (msd) (rd.t || []).forEach(function(v) {
-            var inp = msd.querySelector('input[value="' + v + '"]');
-            if (inp) { inp.checked = true; msdUpdate(inp); }
+
+          // ── Handle old save format { m, t, fn } ──────────────────
+          if (rd.cat === undefined && rd.m !== undefined) {
+            if (sec === 'ext') {
+              // Old ext: rd.t[0] was the selected type → now category
+              var catSelect = tr.querySelector('.cat-select');
+              if (catSelect && rd.t && rd.t[0]) {
+                catSelect.value = rd.t[0];
+                updateMaterialCell(catSelect);
+              }
+              var firstMat = tr.querySelector('.material-inputs input[type=text]');
+              if (firstMat && rd.m) firstMat.value = rd.m;
+              var fnInput = tr.querySelector('.fn-input');
+              if (fnInput) fnInput.value = rd.fn || '';
+            } else {
+              // Old int: rd.t was the type multi-select (Liner/Panels/etc.) → now fnArr
+              var fnMsd = tr.querySelector('td .msd');
+              if (fnMsd) (rd.t || []).forEach(function(v) {
+                var inp = fnMsd.querySelector('input[value="' + v + '"]');
+                if (inp) { inp.checked = true; msdUpdate(inp); }
+              });
+              var firstMat2 = tr.querySelector('.material-inputs input[type=text]');
+              if (firstMat2 && rd.m) firstMat2.value = rd.m;
+            }
+            updatePrintSpan(tr);
+            return;
+          }
+
+          // ── Current format { cat, mat, decor, fn, fnArr } ────────
+          var catSelect = tr.querySelector('.cat-select');
+          if (catSelect) {
+            catSelect.value = rd.cat || '';
+            if (rd.cat) updateMaterialCell(catSelect);
+          }
+
+          var matInputs = Array.from(tr.querySelectorAll('.material-inputs input[type=text]'))
+            .filter(function(i) { return i.style.display !== 'none'; });
+          (rd.mat || []).forEach(function(v, i) {
+            if (matInputs[i]) matInputs[i].value = v;
           });
+
+          if (rd.decor !== null && rd.decor !== undefined) {
+            var decorBtn = tr.querySelector('.mat-decor-btn');
+            if (decorBtn) {
+              toggleDecoration(decorBtn);
+              var decorInput = tr.querySelector('.mat-decor-input');
+              if (decorInput) decorInput.value = rd.decor;
+            }
+          }
+
+          if (sec === 'ext') {
+            var fnInput = tr.querySelector('.fn-input');
+            if (fnInput) fnInput.value = rd.fn || '';
+          } else {
+            var fnMsd = tr.querySelector('td .msd');
+            if (fnMsd) (rd.fnArr || []).forEach(function(v) {
+              var inp = fnMsd.querySelector('input[value="' + v + '"]');
+              if (inp) { inp.checked = true; msdUpdate(inp); }
+            });
+          }
+          updatePrintSpan(tr);
         });
         renumber(sec);
       }
