@@ -88,35 +88,6 @@ var MATERIAL_CONFIG = {
         }
       ]
     },
-    'Linen/Paper': {
-      interior: true,
-      printTemplate: function(v) {
-        return [v.vendor, v.productLine, v.color].filter(Boolean).join(' ');
-      },
-      inputs: [
-        {
-          id: 'vendor',
-          placeholder: 'Vendor',
-          autocomplete: [
-            'Holliston',
-            'LBS',
-            'Neenah',
-            'Pointe International',
-            'PVC Tech',
-            'Koroseal',
-            'Wolf Gordon'
-          ]
-        },
-        {
-          id: 'productLine',
-          placeholder: 'Product Line'
-        },
-        {
-          id: 'color',
-          placeholder: 'Color'
-        }
-      ]
-    },
 
     Wood: {
       interior: false,
@@ -296,8 +267,8 @@ var MATERIAL_CONFIG = {
         return [v.type, v.finish].filter(Boolean).join(' / ');
       },
       inputs: [
-        { id: 'type',   placeholder: 'Type'   },
-        { id: 'finish', placeholder: 'Finish' }
+        { id: 'type',   placeholder: 'Type',  autocomplete: ['Holliston']  },
+        { id: 'finish', placeholder: 'Finish' },
       ]
     },
 

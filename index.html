@@ -14,11 +14,11 @@
       --on-accent:      #fff;        /* set dynamically based on accent luminance */
       --ink:            #262626;
       --muted:          #737373;   /* placeholder text, secondary labels */
-      --surface:        #ececec;   /* section bands, card borders */
-      --status-red:     #c0392b;
-      --status-yellow:  #e6b800;
-      --status-green:   #27ae60;
-      --padding:        32px;
+      --surface:        #e2e2e2;   /* section bands, card borders */
+      --status-red:     #fc6251;
+      --status-yellow:  #f0d156;
+      --status-green:   #3ebb63;
+      --padding:        16px 32px;
     }
 
     /* ============================================================
@@ -56,14 +56,21 @@
     .title {
       background: var(--accent);
       color: var(--on-accent);
-      font-size: 30px;
-      font-weight: 800;
       letter-spacing: .04em;
       text-transform: uppercase;
       padding: var(--padding);
-      padding-bottom: 16px;
+      padding: 32px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+    }
+    .title h1{
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 30px;
+      margin: 0px;
+      padding: 0px;
+      height: fit-content;
     }
 
     /* ============================================================
@@ -98,12 +105,14 @@
       /* Badge always pins to the right (mirrors margin-left:auto on stage-wrap) */
       .stage-banner {
         display: block;
-        margin-left: auto;
+        width: 100%;
         padding: 4px 12px;
+        margin-bottom: 16px;
         font-size: 14pt;
         font-weight: 800;
         letter-spacing: .08em;
         text-transform: uppercase;
+        text-align: center;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -147,7 +156,7 @@
     .meta-strip {
       display: flex;
       align-items: center;
-      padding: 8px 0px;
+      padding-bottom: 16px;
       gap: 16px;
     }
 
@@ -583,7 +592,7 @@
       font-size: 16px;
       line-height: 1;
       padding: 2px 6px;
-      color: #b34;
+      color: var(--status-red);
       border-radius: 3px;
       transition: color 0.15s ease, background-color 0.15s ease;
     }
@@ -601,6 +610,12 @@
       cursor: pointer;
       letter-spacing: .03em;
       transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .addbtn:disabled {
+      opacity: 0.35;
+      cursor: default;
+      pointer-events: none;
     }
 
     .addbtn:hover {
@@ -1228,6 +1243,11 @@
       background: color-mix(in srgb, var(--accent) 65%, #000);
     }
 
+    .ns-label:has(input:checked) {
+        background-color: color-mix(in srgb, var(--status-red) , transparent 80%);
+        border: solid 1px var(--status-red);
+      }
+
     /* ============================================================
      PRINT
      ============================================================ */
@@ -1393,7 +1413,7 @@
       }
 
       .ns-label:has(input:checked) {
-        background-color: red;
+        background-color: var(--status-red);
         color: white;
         font-weight: 800;
         margin-bottom: 16px;
@@ -1424,7 +1444,7 @@
 
     <!-- ===== TITLE BAR ===== -->
     <div class="title">
-      Menu Construction Sheet
+      <h1>Menu Construction Sheet</h1>
       <div class="inputs">
         <div class="input-wrap">
           <span class="lab">Designer:</span>
@@ -1535,8 +1555,8 @@
           </table>
           <div class="btnrow">
             <button class="addbtn" onclick="addRow('int')">+ Add Interior Material</button>
-            <button class="addbtn" id="ccIntAdd" onclick="addStandardCCInterior()" style="display:inline-block;">+ Add
-              Standard CC Interior</button>
+            <button class="addbtn" id="ccIntAdd" onclick="addStandardCCInterior()">+ Add
+              Standard Check Presenter Interior</button>
           </div>
         </div>
         <div id="fnCards" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
@@ -2034,7 +2054,7 @@
     }
     function showCustomBoard(on) {
       document.getElementById('customBoardRow').style.display = on ? 'flex' : 'none';
-      document.getElementById('customBoardAdd').style.display = on ? 'none' : 'inline-block';
+      document.getElementById('customBoardAdd').disabled = on;
       if (!on) document.getElementById('customBoardRow').querySelector('input[type=text]').value = '';
     }
 
@@ -2053,17 +2073,17 @@
         '</div>' +
         '<button class="rm" title="Remove" onclick="removeStandardCCInterior()">&times;</button>';
       document.getElementById('fnCards').appendChild(card);
-      document.getElementById('ccIntAdd').style.display = 'none';
+      document.getElementById('ccIntAdd').disabled = true;
     }
 
     function removeStandardCCInterior() {
       var card = document.getElementById('ccIntCard');
       if (card) card.remove();
-      document.getElementById('ccIntAdd').style.display = 'inline-block';
+      document.getElementById('ccIntAdd').disabled = false;
     }
     function showSailcloth(on) {
       document.getElementById('sailclothRow').style.display = on ? 'flex' : 'none';
-      document.getElementById('sailclothAdd').style.display = on ? 'none' : 'inline-block';
+      document.getElementById('sailclothAdd').disabled = on;
       if (!on) {
         var row = document.getElementById('sailclothRow');
         row.querySelectorAll('input[type=text]').forEach(function (i) { i.value = ''; });
@@ -2111,12 +2131,12 @@
       html += '<button class="rm" title="Remove" onclick="removeBinding(\'' + key + '\')">&times;</button>';
       row.innerHTML = html;
       insertOrdered('bindingRows', row, key, BINDING_ORDER);
-      document.getElementById('badd-' + key).style.display = 'none';
+      document.getElementById('badd-' + key).disabled = true;
     }
     function removeBinding(key) {
       var row = document.getElementById('brow-' + key);
       if (row) row.remove();
-      document.getElementById('badd-' + key).style.display = 'inline-block';
+      document.getElementById('badd-' + key).disabled = false;
     }
     var DECOR = {
       deboss: {
@@ -2219,7 +2239,7 @@
     }
     function showNotes(on) {
       document.getElementById('notesRow').style.display = on ? 'flex' : 'none';
-      document.getElementById('notesAdd').style.display = on ? 'none' : 'inline-block';
+      document.getElementById('notesAdd').disabled = on;
       if (!on) { document.getElementById('notesRow').querySelector('textarea').value = ''; }
     }
     // ── MSD keyboard navigation ───────────────────────────────────
@@ -2822,7 +2842,7 @@
       });
 
       document.getElementById('bindingRows').innerHTML = '';
-      Object.keys(BINDING).forEach(function (k) { document.getElementById('badd-' + k).style.display = 'inline-block'; });
+      Object.keys(BINDING).forEach(function (k) { document.getElementById('badd-' + k).disabled = false; });
       Object.keys(s.bind || {}).forEach(function (key) {
         if (!BINDING[key]) return;
         addBinding(key);
@@ -3025,7 +3045,7 @@
     })();
 
     document.addEventListener('keydown', function (e) {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 's')) {
         e.preventDefault();
         doSave();
       }
