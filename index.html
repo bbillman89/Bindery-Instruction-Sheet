@@ -82,6 +82,80 @@
     }
 
     /* ============================================================
+     STAGE BANNER  (print-only highlighted badge, top-right of meta strip)
+     ============================================================ */
+    .stage-banner { display: none; }
+
+    @media print {
+      /* Hide the interactive toggle; show the badge in its place */
+      .stage-wrap,
+      .stage-wrap * { display: none !important; }
+
+      /* Badge always pins to the right (mirrors margin-left:auto on stage-wrap) */
+      .stage-banner {
+        display: block;
+        margin-left: auto;
+        padding: 4px 12px;
+        font-size: 14pt;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .stage-banner span { display: none; }
+
+      /* Per-stage colors */
+      body:has(#stage-proof:checked)      .stage-banner { background: #c0392b; color: #fff; }
+      body:has(#stage-prototype:checked)  .stage-banner { background: #e6b800; color: #000; }
+      body:has(#stage-production:checked) .stage-banner { background: #27ae60; color: #fff; }
+
+      body:has(#stage-proof:checked)      .stage-banner .sb-proof      { display: inline; }
+      body:has(#stage-prototype:checked)  .stage-banner .sb-prototype  { display: inline; }
+      body:has(#stage-production:checked) .stage-banner .sb-production { display: inline; }
+    }
+
+    /* ============================================================
+     META STRIP  (Non-Standard flag + Stage toggle)
+     ============================================================ */
+    .meta-strip {
+      display: flex;
+      align-items: center;
+      padding: 8px 0px;
+      gap: 16px;
+    }
+
+    /* Stage wrap always pins to the right regardless of NS label visibility */
+    .meta-strip .stage-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    /* Stage toggle: color-coded by selected state */
+    body:has(#stage-proof:checked)      #stageToggle label[for="stage-proof"]      { background: #c0392b; color: #fff }
+    body:has(#stage-prototype:checked)  #stageToggle label[for="stage-prototype"]  { background: #e6b800; color: #000; }
+    body:has(#stage-production:checked) #stageToggle label[for="stage-production"] { background: #27ae60; color: #fff; }
+
+    /* Tooltip icon next to non-standard label */
+    .ns-info {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid var(--help-text);
+      color: var(--help-text);
+      font-size: 9px;
+      font-style: normal;
+      font-weight: 700;
+      cursor: default;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
      HEADER BLOCK  (Job Number / Description / Property / Designer)
      ============================================================ */
     .header-panel {
@@ -99,6 +173,8 @@
       white-space: nowrap;
       color: var(--ink);
     }
+
+    #job-number::placeholder { font-weight: 400; }
 
     /* boxed fillable field */
     .box {
@@ -136,6 +212,9 @@
       gap: 8px 16px;
       margin: 6px 0;
     }
+
+    .frow .box.md { flex: 1; min-width: 80px; }
+    .frow .box.sm { width: 80px; flex-shrink: 0; }
 
 
 
@@ -316,6 +395,12 @@
       right: 6px;
     }
 
+    /* MSD button inside a brow card (e.g. sailcloth edge) */
+    .brow .msd-btn {
+      border: solid 1px var(--boxborder);
+      width: 100%;
+    }
+
     .box.grow {
       flex: 1 1 auto;
       min-width: 140px;
@@ -365,15 +450,21 @@
       text-align: left;
       padding: 4px 8px;
       border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
       text-transform: uppercase;
     }
+
+    .msec th:last-child { border-right: none; }
 
     .msec td {
       padding: 0px;
       border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
       vertical-align: middle;
       transition: background-color 0.1s ease;
     }
+
+    .msec td:last-child { border-right: none; }
 
 
 
@@ -475,6 +566,12 @@
       margin: 12px 0 0;
     }
 
+    .mat-group + .mat-group {
+      border-top: 1px solid var(--section-header-band);
+      padding-top: 10px;
+      margin-top: 4px;
+    }
+
     .mat-group th {
       color: var(--ink);
     }
@@ -489,6 +586,163 @@
       flex-direction: column;
       gap: 4px;
       width: 100%;
+    }
+
+    /* ============================================================
+     CATEGORY SELECT  (material table first column)
+     ============================================================ */
+    .cat-select {
+      width: 100%;
+      border: 1.5px solid transparent;
+      background: transparent;
+      padding: 5px 6px;
+      font: inherit;
+      font-size: 12px;
+      border-radius: 3px;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+      cursor: pointer;
+      color: var(--ink);
+    }
+
+    .cat-select:hover {
+      border-color: var(--header-bar);
+    }
+
+    .cat-select:focus {
+      outline: none;
+      background: #fff;
+      border-color: var(--header-bar);
+      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+    }
+
+    /* ============================================================
+     MATERIAL INPUTS  (dynamic fields in center column)
+     ============================================================ */
+    .material-inputs {
+      display: flex;
+      align-items: stretch;
+      width: 100%;        /* fill the table cell */
+      gap: 0;
+      min-width: 0;
+    }
+
+    /* Each input is separated by a hairline divider */
+    .material-inputs input[type=text] {
+      flex: 1;
+      min-width: 48px;
+      border-right: 1px solid var(--line) !important;
+      border-radius: 0 !important;
+    }
+
+    .material-inputs input[type=text]:last-child,
+    .material-inputs .mat-decor-field:last-child input[type=text] {
+      border-right: none !important;
+    }
+
+    /* Decoration toggle field */
+    .mat-decor-field {
+      display: flex;
+      align-items: center;
+      border-right: 1px solid var(--line);
+    }
+
+    .mat-decor-field:last-child {
+      border-right: none;
+    }
+
+    /* When decoration is revealed, the input inside should flex-grow */
+    .mat-decor-field:has(.mat-decor-input:not([style*="display:none"]):not([style*="display: none"])) {
+      flex: 1;
+    }
+
+    .mat-decor-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .mat-decor-dismiss {
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      padding: 0 6px;
+      font-size: 14px;
+      line-height: 1;
+      opacity: 0.5;
+      height: 100%;
+    }
+
+    .mat-decor-dismiss:hover { opacity: 1; }
+
+    /* Function detail card inputs — override .msec's transparent/borderless table styles */
+    #fnCards input[type=text].box {
+      border: 1.5px solid var(--boxborder);
+      background: #fff;
+      width: 100%;
+    }
+    #fnCards input[type=text].box:hover  { border-color: var(--header-bar); }
+    #fnCards input[type=text].box:focus  {
+      outline: none;
+      border-color: var(--header-bar);
+      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+    }
+    /* MSD inside fn cards: match brow style, fill full width */
+    #fnCards .fn-msd-wrap { width: 100%; }
+    #fnCards .fn-msd-wrap .msd { width: 100%; }
+    #fnCards .fn-msd-wrap .msd-btn { border: solid 1px var(--boxborder); width: 100%; }
+
+    .mat-decor-btn {
+      border: none;
+      background: #faf3d6;
+      color: var(--ink);
+      font: inherit;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      letter-spacing: .02em;
+      transition: background-color 0.15s ease;
+      height: 100%;
+    }
+
+    .mat-decor-btn:hover {
+      background: #f0e4b0;
+    }
+
+    .mat-decor-input {
+      flex: 1;
+      min-width: 80px;
+      border-right: none !important;
+    }
+
+    /* Print span — hidden on screen, shown on print in place of inputs */
+    .mat-print {
+      display: none;
+      font-size: 12px;
+      padding: 5px 6px;
+      color: var(--ink);
+    }
+
+    @media print {
+      .cat-select {
+        background: transparent;
+        border-color: transparent;
+        box-shadow: none;
+        appearance: none;
+        -webkit-appearance: none;
+        padding-right: 0;
+      }
+      .mat-decor-btn {
+        display: none !important;
+      }
+      /* Hide inputs; show pre-formatted print span instead */
+      .material-inputs {
+        display: none !important;
+      }
+      .mat-print {
+        display: inline;
+      }
     }
 
     /* ============================================================
@@ -748,6 +1002,12 @@
       width: 100%;
     }
 
+    /* Interior Function MSD: full-cell dropdown — no side borders, match table font */
+    #intBody td .msd-btn {
+      border-width: 0;
+      font-size: 12px;
+    }
+
     .msec td:has(.rm){
       align-items: center;
       border-left: solid .5px var(--help-text);
@@ -979,6 +1239,24 @@
         display: none;
       }
 
+      /* Meta strip: remove decorative border; hide ns-info icon */
+      .meta-strip {
+        border-bottom: none;
+        background: transparent;
+        padding-bottom: 2px;
+      }
+      .ns-info { display: none; }
+
+      /* Non-standard label: hide checkbox, hide whole label if unchecked */
+      .ns-label input[type=checkbox] { display: none; }
+      .ns-label:not(:has(input:checked)) { display: none; }
+      .ns-label:has(input:checked){
+        background-color: red;
+        color: white;
+        font-weight: 800;
+        margin-bottom: 16px;
+      }
+
       @page {
         size: 11in 17in;
         margin: 0;
@@ -1008,12 +1286,39 @@
 
         <div class="input-wrap">
           <span class="lab">Job Number:</span>
-          <input type="text" id="job-number" class="box sm">
+          <input type="text" id="job-number" class="box sm" inputmode="numeric" pattern="\d{1,6}" maxlength="6" placeholder="000000" oninput="this.value=this.value.replace(/\D/g,'')">
         </div>
       </div>
     </div>
 
+    <!-- Stage banner: hidden on screen, highlighted strip on print -->
+    
+
     <div class="body">
+
+      <!-- ===== META STRIP: Non-Standard flag (left) + Stage toggle (right) ===== -->
+      <div class="meta-strip">
+        
+        <label class="copt ns-label" title="Check this box when the job uses new materials or unusual construction methods">
+          <input type="checkbox" id="nonStandardCb">
+          Non-Standard Configuration
+        </label>
+        <div class="stage-wrap">
+          <div class="seg-toggle" id="stageToggle">
+            <input type="radio" name="stage" id="stage-proof" value="Proof" checked>
+            <label for="stage-proof">Proof</label>
+            <input type="radio" name="stage" id="stage-prototype" value="Prototype">
+            <label for="stage-prototype">Prototype</label>
+            <input type="radio" name="stage" id="stage-production" value="Production">
+            <label for="stage-production">Production</label>
+          </div>
+        </div>
+        <div class="stage-banner" aria-hidden="true">
+          <span class="sb-proof">For Proof Only</span>
+          <span class="sb-prototype">For Prototype Only</span>
+          <span class="sb-production">For Production</span>
+        </div>
+      </div>
 
       <!-- ===== SECTION 1: HEADER / JOB INFO (static, fillable) ===== -->
       <div class="header-panel">
@@ -1039,32 +1344,6 @@
           <input type="text" class="box sm">
         </div>
 
-        <div class="frow size-sec" id="customBoardRow" style="display:none; margin-bottom: 8px;">
-          <span class="lab">Custom Board Type:</span>
-          <input type="text" class="box grow">
-          <button class="rm" title="Remove" onclick="showCustomBoard(false)" style="margin-left:4px;">&times;</button>
-        </div>
-
-        <div class="frow size-sec" id="sailclothRow" style="display:none; margin-bottom: 8px;">
-          <span class="lab">Sailcloth Reveal Size:</span>
-          <input type="text" class="box">
-          <span class="lab" style="margin-left:8px;">Edge:</span>
-          <div class="msd" id="sailclothEdgeMsd" data-placeholder="None Selected">
-            <button type="button" class="msd-btn" onclick="msdToggle(this)" onkeydown="msdBtnKeydown(event,this)">
-              <span class="msd-val">None Selected</span>
-              <span class="msd-caret">▾</span>
-            </button>
-            <div class="msd-panel" style="display:none;">
-              <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox" value="Exposed" onchange="msdUpdate(this)"> Exposed</label>
-              <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox" value="Closed" onchange="msdUpdate(this)"> Closed</label>
-              <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox" value="Flush" onchange="msdUpdate(this)"> Flush</label>
-            </div>
-          </div>
-          <button class="rm" title="Remove" onclick="showSailcloth(false)" style="margin-left:4px;">&times;</button>
-        </div>
-
-        <button class="addbtn" id="sailclothAdd" onclick="showSailcloth(true)">+ Add sailcloth reveal</button>
-        <button class="addbtn" id="customBoardAdd" onclick="showCustomBoard(true)">+ Add Custom Board Type</button>
       </div>
 
       <!-- ===== SECTION 3: MATERIAL (dynamic, fillable) ===== -->
@@ -1078,38 +1357,83 @@
       </div>
       <div class="msec">
         <div class="mat-group">
-        <table>
-          <thead>
-            <tr>
-              <th class="num">#</th>
-              <th style="width:300px;">Exterior Material / Color</th>
-              <th>Type</th>
-              <th style="width:170px;">Function</th>
-              <th class="colrm" style="width:26px;"></th>
-            </tr>
-          </thead>
-          <tbody id="extBody"></tbody>
-        </table>
-        <button class="addbtn" onclick="addRow('ext')">+ Add exterior material</button>
-      </div>
+          <table>
+            <thead>
+              <tr>
+                <th class="num">#</th>
+                <th style="width:130px;">Exterior</th>
+                <th>Material</th>
+                <th style="width:180px;">Function</th>
+                <th class="colrm" style="width:26px;"></th>
+              </tr>
+            </thead>
+            <tbody id="extBody"></tbody>
+          </table>
+          <button class="addbtn" onclick="addRow('ext')">+ Add Exterior Material</button>
+        </div>
         <div class="mat-group">
           <table>
             <thead>
               <tr>
                 <th class="num">#</th>
-                <th style="width:300px;">interior Material / Color</th>
-                <th>Type</th>
-                <th style="width:170px;">Function</th>
+                <th style="width:130px;">interior</th>
+                <th>Material</th>
+                <th style="width:180px;">Function</th>
                 <th class="colrm" style="width:26px;"></th>
               </tr>
             </thead>
             <tbody id="intBody"></tbody>
           </table>
-          <button class="addbtn" onclick="addRow('int')">+ Add interior material</button>
+          <button class="addbtn" onclick="addRow('int')">+ Add Interior Material</button>
+          <button class="addbtn" id="ccIntAdd" onclick="addStandardCCInterior()" style="display:inline-block;">+ Add Standard CC Interior</button>
+        </div>
+        <div id="fnCards" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;"></div>
+      </div>
+
+      <!-- ===== SECTION 4: CUSTOMIZATIONS (sailcloth + custom board) ===== -->
+      <div class="band">Customizations</div>
+      <div class="section">
+        <div class="btnrow">
+          <button class="addbtn" id="sailclothAdd" onclick="showSailcloth(true)">+ Add Sailcloth Reveal</button>
+          <button class="addbtn" id="customBoardAdd" onclick="showCustomBoard(true)">+ Add Custom Board Type</button>
+        </div>
+        <div id="customizationRows" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 8px;">
+
+          <div class="brow" id="sailclothRow" style="display:none;">
+            <span class="btype">Sailcloth Reveal</span>
+            <div class="card-field">
+              <span class="lab">Reveal Size</span>
+              <input type="text" class="box" style="width:100%;">
+            </div>
+            <div class="card-field">
+              <span class="lab">Edge</span>
+              <div class="msd" id="sailclothEdgeMsd" data-placeholder="None Selected">
+                <button type="button" class="msd-btn" onclick="msdToggle(this)" onkeydown="msdBtnKeydown(event,this)">
+                  <span class="msd-val">None Selected</span>
+                  <span class="msd-caret">▾</span>
+                </button>
+                <div class="msd-panel" style="display:none;">
+                  <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox" value="Exposed" onchange="msdUpdate(this)"> Exposed</label>
+                  <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox" value="Closed" onchange="msdUpdate(this)"> Closed</label>
+                  <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox" value="Flush" onchange="msdUpdate(this)"> Flush</label>
+                </div>
+              </div>
+            </div>
+            <button class="rm" title="Remove" onclick="showSailcloth(false)">&times;</button>
+          </div>
+
+          <div class="brow" id="customBoardRow" style="display:none;">
+            <span class="btype">Custom Board Type</span>
+            <div class="card-field">
+              <input type="text" class="box" style="width:100%;">
+            </div>
+            <button class="rm" title="Remove" onclick="showCustomBoard(false)">&times;</button>
+          </div>
+
         </div>
       </div>
 
-      <!-- ===== SECTION 4: BINDING TYPE (build-as-needed) ===== -->
+      <!-- ===== SECTION 5: BINDING TYPE (build-as-needed) ===== -->
       <div class="band">Binding Type</div>
       <div class="section">
         <div class="btnrow">
@@ -1159,6 +1483,15 @@
 
   </div>
 
+  <!-- Ext Function autocomplete options -->
+  <datalist id="dl-ext-function">
+    <option value="Full Wrap">
+    <option value="Front Cover">
+    <option value="Back Cover">
+    <option value="Front & Back Cover">
+    <option value="Sailcloth Reveal">
+  </datalist>
+
   <!-- Drop overlay -->
   <div id="dropOverlay" class="drop-overlay" style="display:none;">
     <div class="drop-overlay-box">
@@ -1180,11 +1513,8 @@
   </div>
   <div id="printToast" class="print-toast" style="display:none;"></div>
 
+  <script src="material-config.js"></script>
   <script>
-    var TYPES = {
-      ext: ["Bookcloth", "Wood", "Rockboard", "Metal", "Leather", "Acrylic", "Carbonite", "4C Litho"],
-      int: ["Liner", "Panels", "Pockets", "CC Slot", "Pen Loop", "4C Litho"]
-    };
     var msdCounter = 0;
     function msdHtml(placeholder, options, single) {
       var grp = single ? 'msd-' + (msdCounter++) : null;
@@ -1211,6 +1541,103 @@
       var checked = Array.from(msd.querySelectorAll('input:checked')).map(function (i) { return i.value; });
       msd.querySelector('.msd-val').textContent = checked.length ? checked.join(', ') : msd.dataset.placeholder;
       if (input.type === 'radio') msd.querySelector('.msd-panel').style.display = 'none';
+      if (msd.closest('#intBody')) syncFunctionCards();
+    }
+
+    /* ── Function detail cards ─────────────────────────────────────
+       Appear below the material tables when interior functions are selected.
+    ─────────────────────────────────────────────────────────────── */
+    var FN_CARD_CONFIG = {
+      'Liner':    [
+        { id: 'location', label: 'Location' },
+        { id: 'size',     label: 'Size' }
+      ],
+      'Panels':   [
+        { id: 'location', label: 'Location' },
+        { id: 'size',     label: 'Size' }
+      ],
+      'Pockets':  [
+        { id: 'size',     label: 'Size' },
+        { id: 'type',     label: 'Type', type: 'msd', placeholder: 'None Selected', options: ['Angled', 'Flat', 'CC'] },
+        { id: 'location', label: 'Location' }
+      ],
+      'CC Slot':  [
+        { id: 'location', label: 'Location' }
+      ],
+      'Pen Loop': [
+        { id: 'location', label: 'Location' }
+      ]
+    };
+
+    var FN_CARD_ORDER = ['Liner', 'Panels', 'Pockets', 'CC Slot', 'Pen Loop'];
+    var _intRowId = 0;
+
+    function syncFunctionCards() {
+      var container = document.getElementById('fnCards');
+      var rowEls = Array.from(document.querySelectorAll('#intBody tr'));
+
+      // Build desired list: for each fn (in order), collect rows that have it checked
+      var desired = [];
+      FN_CARD_ORDER.forEach(function(fn) {
+        rowEls.forEach(function(tr) {
+          var msd = tr.querySelector('.msd');
+          if (!msd) return;
+          var checked = Array.from(msd.querySelectorAll('input:checked')).map(function(i) { return i.value; });
+          if (checked.indexOf(fn) !== -1) {
+            desired.push({ rowId: tr.dataset.rowId, fn: fn });
+          }
+        });
+      });
+
+      // Build desired key set
+      var desiredKeys = {};
+      desired.forEach(function(d) { desiredKeys[d.fn + '::' + d.rowId] = true; });
+
+      // Remove stale cards
+      Array.from(container.querySelectorAll('.brow[data-fn][data-row-id]')).forEach(function(card) {
+        if (!desiredKeys[card.dataset.fn + '::' + card.dataset.rowId]) card.remove();
+      });
+
+      // Add missing cards
+      desired.forEach(function(d) {
+        if (container.querySelector('.brow[data-fn="' + d.fn + '"][data-row-id="' + d.rowId + '"]')) return;
+        var cfg = FN_CARD_CONFIG[d.fn];
+        if (!cfg) return;
+
+        var html = '<span class="btype">' + d.fn + '</span>';
+        cfg.forEach(function(f) {
+          html += '<div class="card-field">';
+          if (f.label) html += '<span class="lab">' + f.label + '</span>';
+          if (f.type === 'msd') {
+            html += '<div class="fn-msd-wrap" data-fn-field="' + f.id + '">' +
+              msdHtml(f.placeholder, f.options, true) + '</div>';
+          } else {
+            html += '<input type="text" class="box" data-fn-field="' + f.id + '" style="width:100%;">';
+          }
+          html += '</div>';
+        });
+
+        var card = document.createElement('div');
+        card.className = 'brow';
+        card.dataset.fn = d.fn;
+        card.dataset.rowId = d.rowId;
+        card.innerHTML = html;
+        container.appendChild(card);
+      });
+
+      // Sort cards into desired order
+      desired.forEach(function(d) {
+        var card = container.querySelector('.brow[data-fn="' + d.fn + '"][data-row-id="' + d.rowId + '"]');
+        if (card) container.appendChild(card);
+      });
+
+      // Renumber within each fn type
+      FN_CARD_ORDER.forEach(function(fn) {
+        var cards = Array.from(container.querySelectorAll('.brow[data-fn="' + fn + '"]'));
+        cards.forEach(function(card, i) {
+          card.querySelector('.btype').textContent = cards.length > 1 ? fn + ' ' + (i + 1) : fn;
+        });
+      });
     }
     function msdReset(container) {
       container.querySelectorAll('.msd').forEach(function (msd) {
@@ -1240,28 +1667,207 @@
         document.querySelectorAll('.msd-panel').forEach(function (p) { p.style.display = 'none'; });
       }
     });
+    /* ── Stage + Non-standard helpers ──────────────────────────── */
+
+    function getStage() {
+      var checked = document.querySelector('#stageToggle input:checked');
+      return checked ? checked.value : 'Proof';
+    }
+
+    function nudgeNonStandard() {
+      if (!document.getElementById('nonStandardCb').checked) {
+        showToast('Heads up: this may be a non-standard configuration — consider checking the flag at the top.');
+      }
+    }
+
+    /* ── Material config helpers ───────────────────────────────── */
+
+    /** Build all shared <datalist> elements once at page load. */
+    function initDataLists() {
+      var frag = document.createDocumentFragment();
+      MATERIAL_CONFIG.categories.forEach(function(cat) {
+        var cfg = MATERIAL_CONFIG.fields[cat];
+        if (!cfg) return;
+        (cfg.inputs || []).forEach(function(field) {
+          if (!field.autocomplete) return;
+          var dlId = dlIdFor(cat, field.id);
+          if (document.getElementById(dlId)) return;
+          var dl = document.createElement('datalist');
+          dl.id = dlId;
+          field.autocomplete.forEach(function(opt) {
+            var o = document.createElement('option');
+            o.value = opt;
+            dl.appendChild(o);
+          });
+          frag.appendChild(dl);
+        });
+      });
+      document.body.appendChild(frag);
+    }
+
+    function dlIdFor(cat, fieldId) {
+      return 'dl-' + cat.replace(/\s+/g, '-').toLowerCase() + '-' + fieldId;
+    }
+
+    /** Build the category <select> HTML for a section.
+     *  Interior only shows categories with interior: true. */
+    function buildCategorySelectHtml(sec) {
+      var cats = MATERIAL_CONFIG.categories.filter(function(cat) {
+        if (sec !== 'int') return true;
+        var cfg = MATERIAL_CONFIG.fields[cat];
+        return cfg && cfg.interior;
+      });
+      var opts = '<option value="">—</option>';
+      cats.forEach(function(cat) {
+        opts += '<option value="' + cat + '">' + cat + '</option>';
+      });
+      return '<select class="cat-select" onchange="updateMaterialCell(this)">' + opts + '</select>';
+    }
+
+    /** Rebuild the Material cell when a category is chosen. */
+    function updateMaterialCell(select) {
+      var tr = select.closest('tr');
+      var cat = select.value;
+      var cell = tr.querySelector('.col-material-cell');
+      if (cat === 'Other') nudgeNonStandard();
+      var cfg = cat ? MATERIAL_CONFIG.fields[cat] : null;
+
+      var html = '<div class="material-inputs">';
+      if (cfg) {
+        (cfg.inputs || []).forEach(function(field) {
+          if (field.type === 'decoration') {
+            html += '<div class="mat-decor-field">' +
+              '<button type="button" title="Add Decoration" class="mat-decor-btn" onclick="toggleDecoration(this)" disabled>+</button>' +
+              '<input type="text" class="mat-decor-input" data-field-id="' + field.id + '" placeholder="Decoration" style="display:none;">' +
+              '<button type="button" class="mat-decor-dismiss" onclick="dismissDecoration(this)" style="display:none;" title="Remove Decoration">&times;</button>' +
+              '</div>';
+          } else {
+            var dlId = field.autocomplete ? dlIdFor(cat, field.id) : null;
+            html += '<input type="text" placeholder="' + field.placeholder + '" data-field-id="' + field.id + '"' +
+              (dlId ? ' list="' + dlId + '"' : '') + '>';
+          }
+        });
+      }
+      html += '</div><span class="mat-print"></span>';
+      cell.innerHTML = html;
+
+      // Bind input events so the print span updates live as the user types
+      cell.querySelectorAll('.material-inputs input[type=text]').forEach(function(inp) {
+        inp.addEventListener('input', function() { updatePrintSpan(tr); });
+      });
+
+      // Enable decoration button only when Vendor is Majilite
+      var vendorInp = cell.querySelector('input[data-field-id="vendor"]');
+      var decorBtn  = cell.querySelector('.mat-decor-btn');
+      if (vendorInp && decorBtn) {
+        function syncDecorBtn() {
+          var isMajilite = vendorInp.value.trim().toLowerCase() === 'majilite';
+          decorBtn.disabled = !isMajilite;
+          decorBtn.title = isMajilite ? 'Add Decoration' : 'Decoration only available for Majilite';
+        }
+        vendorInp.addEventListener('input', function() {
+          syncDecorBtn();
+          // If vendor changes away from Majilite, dismiss decoration if open
+          if (vendorInp.value.trim().toLowerCase() !== 'majilite') {
+            var decorInput = cell.querySelector('.mat-decor-input');
+            if (decorInput && decorInput.style.display !== 'none') {
+              var dismissBtn = cell.querySelector('.mat-decor-dismiss');
+              if (dismissBtn) dismissDecoration(dismissBtn);
+            }
+          }
+        });
+        syncDecorBtn();
+      }
+
+      updatePrintSpan(tr);
+    }
+
+    /** Update the hidden print span for a material row from the current field values. */
+    function updatePrintSpan(tr) {
+      var catSelect = tr.querySelector('.cat-select');
+      var cat = catSelect ? catSelect.value : '';
+      var span = tr.querySelector('.mat-print');
+      if (!span) return;
+
+      var cfg = cat ? MATERIAL_CONFIG.fields[cat] : null;
+      if (!cfg || !cfg.printTemplate) { span.textContent = ''; return; }
+
+      // Collect values by data-field-id; skip hidden inputs (decoration not yet revealed)
+      var values = {};
+      tr.querySelectorAll('.material-inputs input[type=text]').forEach(function(inp) {
+        var id = inp.dataset.fieldId;
+        if (id && inp.style.display !== 'none') values[id] = inp.value.trim();
+      });
+
+      try { span.textContent = cfg.printTemplate(values); }
+      catch(e) { span.textContent = ''; }
+    }
+
+    /** Reveal the decoration text input when the button is clicked. */
+    function toggleDecoration(btn) {
+      var field = btn.closest('.mat-decor-field');
+      btn.style.display = 'none';
+      var input = field.querySelector('.mat-decor-input');
+      input.style.display = '';
+      var dismiss = field.querySelector('.mat-decor-dismiss');
+      if (dismiss) dismiss.style.display = '';
+      input.focus();
+      var tr = btn.closest('tr');
+      if (tr) updatePrintSpan(tr);
+    }
+
+    /** Collapse the decoration field back to the + button. */
+    function dismissDecoration(dismissBtn) {
+      var field = dismissBtn.closest('.mat-decor-field');
+      dismissBtn.style.display = 'none';
+      var input = field.querySelector('.mat-decor-input');
+      input.value = '';
+      input.style.display = 'none';
+      var addBtn = field.querySelector('.mat-decor-btn');
+      if (addBtn) addBtn.style.display = '';
+      var tr = dismissBtn.closest('tr');
+      if (tr) updatePrintSpan(tr);
+    }
+
     function addRow(sec) {
       var tb = document.getElementById(sec + "Body");
       var tr = document.createElement("tr");
-      tr.innerHTML =
-        '<td class="num"></td>' +
-        '<td><input type="text"></td>' +
-        '<td>' + msdHtml('', TYPES[sec], sec === 'ext') + '</td>' +
-        '<td><input type="text"></td>' +
-        '<td class="colrm"><button class="rm" title="Remove" onclick="removeRow(this,\'' + sec + '\')">&times;</button></td>';
+      var catHtml = buildCategorySelectHtml(sec);
+
+      if (sec === 'ext') {
+        tr.innerHTML =
+          '<td class="num"></td>' +
+          '<td>' + catHtml + '</td>' +
+          '<td class="col-material-cell"><div class="material-inputs"></div><span class="mat-print"></span></td>' +
+          '<td><input type="text" class="fn-input" list="dl-ext-function"></td>' +
+          '<td class="colrm"><button class="rm" title="Remove" onclick="removeRow(this,\'ext\')">&times;</button></td>';
+      } else {
+        /* Interior: Category col has no header; Function col is a multi-select */
+        tr.dataset.rowId = 'ir' + (_intRowId++);
+        tr.innerHTML =
+          '<td class="num"></td>' +
+          '<td>' + catHtml + '</td>' +
+          '<td class="col-material-cell"><div class="material-inputs"></div><span class="mat-print"></span></td>' +
+          '<td>' + msdHtml('Function', MATERIAL_CONFIG.interiorFunctions, false) + '</td>' +
+          '<td class="colrm"><button class="rm" title="Remove" onclick="removeRow(this,\'int\')">&times;</button></td>';
+      }
+
       tb.appendChild(tr);
       renumber(sec);
     }
     function removeRow(btn, sec) {
       var tb = document.getElementById(sec + "Body");
       if (sec === 'ext' && tb.children.length <= 1) {
+        // Clear the last ext row rather than removing it
         var tr = btn.closest('tr');
+        var catSelect = tr.querySelector('.cat-select');
+        if (catSelect) { catSelect.value = ''; updateMaterialCell(catSelect); }
         tr.querySelectorAll('input[type=text]').forEach(function(i) { i.value = ''; });
-        msdReset(tr);
         return;
       }
       btn.closest("tr").remove();
       renumber(sec);
+      if (sec === 'int') syncFunctionCards();
     }
     function renumber(sec) {
       var rows = document.getElementById(sec + "Body").children;
@@ -1273,6 +1879,30 @@
       document.getElementById('customBoardRow').style.display = on ? 'flex' : 'none';
       document.getElementById('customBoardAdd').style.display = on ? 'none' : 'inline-block';
       if (!on) document.getElementById('customBoardRow').querySelector('input[type=text]').value = '';
+    }
+
+    function addStandardCCInterior() {
+      if (document.getElementById('ccIntCard')) return; // already present
+      var card = document.createElement('div');
+      card.className = 'brow';
+      card.id = 'ccIntCard';
+      card.dataset.ccInt = '1';
+      card.innerHTML =
+        '<span class="btype">Standard CC Interior</span>' +
+        '<div class="card-field" style="font-size:11px; color:var(--ink); line-height:1.5;">' +
+          'Black Lexide Panel<br>' +
+          'Regular Black Angled Pocket<br>' +
+          'CC Slot' +
+        '</div>' +
+        '<button class="rm" title="Remove" onclick="removeStandardCCInterior()">&times;</button>';
+      document.getElementById('fnCards').appendChild(card);
+      document.getElementById('ccIntAdd').style.display = 'none';
+    }
+
+    function removeStandardCCInterior() {
+      var card = document.getElementById('ccIntCard');
+      if (card) card.remove();
+      document.getElementById('ccIntAdd').style.display = 'inline-block';
     }
     function showSailcloth(on) {
       document.getElementById('sailclothRow').style.display = on ? 'flex' : 'none';
@@ -1310,6 +1940,7 @@
       other: { label: "Other", fields: [null] }
     };
     function addBinding(key) {
+      if (key === 'other') nudgeNonStandard();
       var cfg = BINDING[key];
       var row = document.createElement('div');
       row.className = 'brow';
@@ -1368,6 +1999,7 @@
     };
     var _decorUid = 0;
     function addDecor(key) {
+      if (key === 'other') nudgeNonStandard();
       var cfg = DECOR[key];
       var uid = key + '-' + (_decorUid++);
       var row = document.createElement('div');
@@ -1560,6 +2192,7 @@
       }
     });
 
+    initDataLists();
     addRow("ext");
 
     // ── Designer field persistence ────────────────────────────────
@@ -1575,11 +2208,22 @@
     // ── Print validation ──────────────────────────────────────────
 
     function matRowFields(tr) {
-      var texts = Array.from(tr.querySelectorAll('td input[type=text]'))
+      var cat = tr.querySelector('.cat-select');
+      var catVal = cat ? cat.value : '';
+
+      // Only count visible material inputs (excludes hidden decoration input)
+      var matVals = Array.from(tr.querySelectorAll('.material-inputs input[type=text]'))
+        .filter(function(i) { return i.style.display !== 'none'; })
         .map(function(i) { return i.value.trim(); });
-      var msd = tr.querySelector('.msd-val');
-      var type = msd ? msd.textContent.trim() : '';
-      return texts.concat([type]);
+
+      // Ext: function is a text input; Int: function is an MSD multi-select
+      var fnInput = tr.querySelector('.fn-input');
+      var fnMsd   = tr.querySelector('td .msd');
+      var fnVal = fnInput
+        ? fnInput.value.trim()
+        : (fnMsd ? (fnMsd.querySelector('.msd-val').textContent.trim() !== fnMsd.dataset.placeholder ? 'selected' : '') : '');
+
+      return [catVal].concat(matVals).concat([fnVal]);
     }
 
     function isRowEmpty(tr) {
@@ -1641,6 +2285,11 @@
         var incomplete = [];
 
         document.querySelectorAll('.brow').forEach(function(card) {
+          // Skip hidden cards (sailcloth/customboard when not added)
+          if (card.style.display === 'none') return;
+          // Skip fn detail cards (supplementary, not required) and Standard CC Interior
+          if (card.closest('#fnCards') || card.id === 'ccIntCard') return;
+
           var label = card.querySelector('.btype').textContent.trim();
           var hasIssue = false;
           card.querySelectorAll('input[type=text], textarea').forEach(function(inp) {
@@ -1681,7 +2330,11 @@
         var intRows = Array.from(document.getElementById('intBody').children);
         var allRows = extRows.concat(intRows);
 
-        if (extRows.every(isRowEmpty)) {
+        var hasDefinedExt = extRows.some(function(tr) {
+          var cat = tr.querySelector('.cat-select');
+          return cat && cat.value !== '';
+        });
+        if (!hasDefinedExt) {
           showToast('Please add at least one exterior material to proceed.');
           return;
         }
@@ -1750,7 +2403,9 @@
       var s = {
         v: 1,
         pv: (window._printVersion || 0) + 1,
-        d: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        d: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        stage: getStage(),
+        ns: document.getElementById('nonStandardCb').checked
       };
 
       var ti = document.querySelectorAll('.title .box');
@@ -1781,17 +2436,48 @@
       }
 
       function capRows(id) {
+        var sec = id.replace('Body', '');
         return Array.from(document.getElementById(id).rows).map(function(tr) {
-          var t = tr.querySelectorAll('input[type=text]');
-          return {
-            m:  t[0] ? t[0].value : '',
-            t:  Array.from(tr.querySelectorAll('.msd input:checked')).map(function(i) { return i.value; }),
-            fn: t[1] ? t[1].value : ''
-          };
+          var catSelect = tr.querySelector('.cat-select');
+          var cat = catSelect ? catSelect.value : '';
+
+          var mat = Array.from(tr.querySelectorAll('.material-inputs input[type=text]'))
+            .filter(function(i) { return i.style.display !== 'none'; })
+            .map(function(i) { return i.value; });
+
+          var decorInput = tr.querySelector('.mat-decor-input');
+          var decor = (decorInput && decorInput.style.display !== 'none') ? decorInput.value : null;
+
+          // Ext: text input; Int: MSD multi-select
+          var fn = '', fnArr = [];
+          if (sec === 'ext') {
+            var fnInput = tr.querySelector('.fn-input');
+            fn = fnInput ? fnInput.value : '';
+          } else {
+            var fnMsd = tr.querySelector('td .msd');
+            fnArr = fnMsd
+              ? Array.from(fnMsd.querySelectorAll('input:checked')).map(function(i) { return i.value; })
+              : [];
+          }
+
+          return { cat: cat, mat: mat, decor: decor, fn: fn, fnArr: fnArr };
         });
       }
       s.ext = capRows('extBody');
       s.int = capRows('intBody');
+
+      // fn cards: capture as ordered array matching card display order
+      s.fnCards = Array.from(document.querySelectorAll('#fnCards .brow[data-fn]')).map(function(card) {
+        var data = {};
+        card.querySelectorAll('input[data-fn-field]').forEach(function(inp) {
+          data[inp.dataset.fnField] = inp.value;
+        });
+        card.querySelectorAll('.fn-msd-wrap[data-fn-field]').forEach(function(wrap) {
+          data[wrap.dataset.fnField] = Array.from(wrap.querySelectorAll('input:checked')).map(function(i) { return i.value; });
+        });
+        return { fn: card.dataset.fn, data: data };
+      });
+      s.ccInt = !!document.getElementById('ccIntCard');
 
       s.bind = {};
       Object.keys(BINDING).forEach(function(key) {
@@ -1833,6 +2519,13 @@
       if (!s || s.v !== 1) { showToast('Unrecognized configuration format.'); return; }
       window._printVersion = s.pv || 1;
 
+      // Stage toggle
+      var stageInp = document.querySelector('#stageToggle input[value="' + (s.stage || 'Proof') + '"]');
+      if (stageInp) stageInp.checked = true;
+
+      // Non-standard flag
+      document.getElementById('nonStandardCb').checked = !!(s.ns);
+
       var ti = document.querySelectorAll('.title .box');
       if (ti[0]) ti[0].value = s.des || '';
       if (ti[1]) ti[1].value = s.job || '';
@@ -1866,26 +2559,110 @@
         showCustomBoard(false);
       }
 
+      removeStandardCCInterior();
+      if (s.ccInt) addStandardCCInterior();
+
       function restoreRows(id, rows) {
         var tb = document.getElementById(id);
         tb.innerHTML = '';
         var sec = id.replace('Body', '');
-        (rows.length > 0 ? rows : (sec === 'ext' ? [{ m: '', t: [], fn: '' }] : [])).forEach(function(rd) {
+        var rowData = rows && rows.length > 0
+          ? rows
+          : (sec === 'ext' ? [{ cat: '', mat: [], decor: null, fn: '', fnArr: [] }] : []);
+
+        rowData.forEach(function(rd) {
           addRow(sec);
           var tr = tb.lastElementChild;
-          var t = tr.querySelectorAll('input[type=text]');
-          if (t[0]) t[0].value = rd.m  || '';
-          if (t[1]) t[1].value = rd.fn || '';
-          var msd = tr.querySelector('.msd');
-          if (msd) (rd.t || []).forEach(function(v) {
-            var inp = msd.querySelector('input[value="' + v + '"]');
-            if (inp) { inp.checked = true; msdUpdate(inp); }
+
+          // ── Handle old save format { m, t, fn } ──────────────────
+          if (rd.cat === undefined && rd.m !== undefined) {
+            if (sec === 'ext') {
+              // Old ext: rd.t[0] was the selected type → now category
+              var catSelect = tr.querySelector('.cat-select');
+              if (catSelect && rd.t && rd.t[0]) {
+                catSelect.value = rd.t[0];
+                updateMaterialCell(catSelect);
+              }
+              var firstMat = tr.querySelector('.material-inputs input[type=text]');
+              if (firstMat && rd.m) firstMat.value = rd.m;
+              var fnInput = tr.querySelector('.fn-input');
+              if (fnInput) fnInput.value = rd.fn || '';
+            } else {
+              // Old int: rd.t was the type multi-select (Liner/Panels/etc.) → now fnArr
+              var fnMsd = tr.querySelector('td .msd');
+              if (fnMsd) (rd.t || []).forEach(function(v) {
+                var inp = fnMsd.querySelector('input[value="' + v + '"]');
+                if (inp) { inp.checked = true; msdUpdate(inp); }
+              });
+              var firstMat2 = tr.querySelector('.material-inputs input[type=text]');
+              if (firstMat2 && rd.m) firstMat2.value = rd.m;
+            }
+            updatePrintSpan(tr);
+            return;
+          }
+
+          // ── Current format { cat, mat, decor, fn, fnArr } ────────
+          var catSelect = tr.querySelector('.cat-select');
+          if (catSelect) {
+            catSelect.value = rd.cat || '';
+            if (rd.cat) updateMaterialCell(catSelect);
+          }
+
+          var matInputs = Array.from(tr.querySelectorAll('.material-inputs input[type=text]'))
+            .filter(function(i) { return i.style.display !== 'none'; });
+          (rd.mat || []).forEach(function(v, i) {
+            if (matInputs[i]) matInputs[i].value = v;
           });
+
+          if (rd.decor !== null && rd.decor !== undefined) {
+            // Fire input event on vendor field so syncDecorBtn enables the button before we open it
+            var vendorInpR = tr.querySelector('input[data-field-id="vendor"]');
+            if (vendorInpR) vendorInpR.dispatchEvent(new Event('input'));
+            var decorBtn = tr.querySelector('.mat-decor-btn');
+            if (decorBtn && !decorBtn.disabled) {
+              toggleDecoration(decorBtn);
+              var decorInput = tr.querySelector('.mat-decor-input');
+              if (decorInput) decorInput.value = rd.decor;
+            }
+          }
+
+          if (sec === 'ext') {
+            var fnInput = tr.querySelector('.fn-input');
+            if (fnInput) fnInput.value = rd.fn || '';
+          } else {
+            var fnMsd = tr.querySelector('td .msd');
+            if (fnMsd) (rd.fnArr || []).forEach(function(v) {
+              var inp = fnMsd.querySelector('input[value="' + v + '"]');
+              if (inp) { inp.checked = true; msdUpdate(inp); }
+            });
+          }
+          updatePrintSpan(tr);
         });
         renumber(sec);
       }
       restoreRows('extBody', s.ext || []);
       restoreRows('intBody', s.int || []);
+
+      // fn cards already created by msdUpdate calls above; sync once more then populate values
+      syncFunctionCards();
+      var fnCardEls = Array.from(document.querySelectorAll('#fnCards .brow[data-fn]'));
+      (s.fnCards || []).forEach(function(entry, i) {
+        var card = fnCardEls[i];
+        if (!card || card.dataset.fn !== entry.fn) return;
+        Object.keys(entry.data || {}).forEach(function(field) {
+          var inp = card.querySelector('input[data-fn-field="' + field + '"]');
+          if (inp) { inp.value = entry.data[field]; return; }
+          var wrap = card.querySelector('.fn-msd-wrap[data-fn-field="' + field + '"]');
+          if (wrap) {
+            var vals = Array.isArray(entry.data[field]) ? entry.data[field] : [entry.data[field]];
+            vals.forEach(function(v) {
+              if (!v) return;
+              var msdInp = wrap.querySelector('input[value="' + v + '"]');
+              if (msdInp) { msdInp.checked = true; msdUpdate(msdInp); }
+            });
+          }
+        });
+      });
 
       document.getElementById('bindingRows').innerHTML = '';
       Object.keys(BINDING).forEach(function(k) { document.getElementById('badd-' + k).style.display = 'inline-block'; });
@@ -2032,7 +2809,7 @@
         document.getElementById('printFooter').textContent = 'v' + state.pv + ' \xb7 ' + state.d;
 
         var origTitle = document.title;
-        document.title = (state.job ? state.job + ' ' : '') + 'MCS v' + state.pv;
+        document.title = (state.job ? state.job + ' ' : '') + 'MCS ' + state.stage + ' v' + state.pv;
         window.addEventListener('afterprint', function onAP() {
           document.title = origTitle;
           window.removeEventListener('afterprint', onAP);
