@@ -10,16 +10,15 @@
      COLOR PALETTE  (edit these to retheme the whole sheet)
      ============================================================ */
     :root {
-      --header-bar: #C9A12C;
-      --header-color: #fff;
-      --section-header-band: #ebe9e5;
-      --panel: #f5f8f8;
-      --ink: #262626;
-      --boxborder: #3A3A3A;
-      --line: #C9A227;
-      --header-barlabel: #9C7A18;
-      --help-text: #9A8E6A;
-      --padding: 32px;
+      --accent:         #C9A12C;
+      --on-accent:      #fff;        /* set dynamically based on accent luminance */
+      --ink:            #262626;
+      --muted:          #737373;   /* placeholder text, secondary labels */
+      --surface:        #ececec;   /* section bands, card borders */
+      --status-red:     #c0392b;
+      --status-yellow:  #e6b800;
+      --status-green:   #27ae60;
+      --padding:        32px;
     }
 
     /* ============================================================
@@ -31,7 +30,7 @@
 
     body {
       margin: 0;
-      background: #e9e7e0;
+      background: #e8e8e8;
       font-family: "Helvetica Neue", Arial, sans-serif;
       color: var(--ink);
       font-size: 12px;
@@ -55,8 +54,8 @@
      TITLE BAR
      ============================================================ */
     .title {
-      background: var(--header-bar);
-      color: var(--header-color);
+      background: var(--accent);
+      color: var(--on-accent);
       font-size: 30px;
       font-weight: 800;
       letter-spacing: .04em;
@@ -71,7 +70,7 @@
      SECTION HEADER BAND
      ============================================================ */
     .band {
-      background: var(--section-header-band);
+      background: var(--surface);
       color: var(--ink);
       font-size: 12px;
       font-weight: 700;
@@ -84,12 +83,17 @@
     /* ============================================================
      STAGE BANNER  (print-only highlighted badge, top-right of meta strip)
      ============================================================ */
-    .stage-banner { display: none; }
+    .stage-banner {
+      display: none;
+    }
 
     @media print {
+
       /* Hide the interactive toggle; show the badge in its place */
       .stage-wrap,
-      .stage-wrap * { display: none !important; }
+      .stage-wrap * {
+        display: none !important;
+      }
 
       /* Badge always pins to the right (mirrors margin-left:auto on stage-wrap) */
       .stage-banner {
@@ -103,16 +107,38 @@
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      .stage-banner span { display: none; }
+
+      .stage-banner span {
+        display: none;
+      }
 
       /* Per-stage colors */
-      body:has(#stage-proof:checked)      .stage-banner { background: #c0392b; color: #fff; }
-      body:has(#stage-prototype:checked)  .stage-banner { background: #e6b800; color: #000; }
-      body:has(#stage-production:checked) .stage-banner { background: #27ae60; color: #fff; }
+      body:has(#stage-proof:checked) .stage-banner {
+        background: var(--status-red);
+        color: #fff;
+      }
 
-      body:has(#stage-proof:checked)      .stage-banner .sb-proof      { display: inline; }
-      body:has(#stage-prototype:checked)  .stage-banner .sb-prototype  { display: inline; }
-      body:has(#stage-production:checked) .stage-banner .sb-production { display: inline; }
+      body:has(#stage-prototype:checked) .stage-banner {
+        background: var(--status-yellow);
+        color: #000;
+      }
+
+      body:has(#stage-production:checked) .stage-banner {
+        background: var(--status-green);
+        color: #fff;
+      }
+
+      body:has(#stage-proof:checked) .stage-banner .sb-proof {
+        display: inline;
+      }
+
+      body:has(#stage-prototype:checked) .stage-banner .sb-prototype {
+        display: inline;
+      }
+
+      body:has(#stage-production:checked) .stage-banner .sb-production {
+        display: inline;
+      }
     }
 
     /* ============================================================
@@ -134,9 +160,20 @@
     }
 
     /* Stage toggle: color-coded by selected state */
-    body:has(#stage-proof:checked)      #stageToggle label[for="stage-proof"]      { background: #c0392b; color: #fff }
-    body:has(#stage-prototype:checked)  #stageToggle label[for="stage-prototype"]  { background: #e6b800; color: #000; }
-    body:has(#stage-production:checked) #stageToggle label[for="stage-production"] { background: #27ae60; color: #fff; }
+    body:has(#stage-proof:checked) #stageToggle label[for="stage-proof"] {
+      background: var(--status-red);
+      color: #fff
+    }
+
+    body:has(#stage-prototype:checked) #stageToggle label[for="stage-prototype"] {
+      background: var(--status-yellow);
+      color: #000;
+    }
+
+    body:has(#stage-production:checked) #stageToggle label[for="stage-production"] {
+      background: var(--status-green);
+      color: #fff;
+    }
 
     /* Tooltip icon next to non-standard label */
     .ns-info {
@@ -146,8 +183,8 @@
       width: 14px;
       height: 14px;
       border-radius: 50%;
-      border: 1px solid var(--help-text);
-      color: var(--help-text);
+      border: 1px solid var(--muted);
+      color: var(--muted);
       font-size: 9px;
       font-style: normal;
       font-weight: 700;
@@ -159,7 +196,7 @@
      HEADER BLOCK  (Job Number / Description / Property / Designer)
      ============================================================ */
     .header-panel {
-      background: var(--section-header-band);
+      background: var(--surface);
       padding: 14px 16px;
       display: flex;
       gap: 16px;
@@ -174,11 +211,13 @@
       color: var(--ink);
     }
 
-    #job-number::placeholder { font-weight: 400; }
+    #job-number::placeholder {
+      font-weight: 400;
+    }
 
     /* boxed fillable field */
     .box {
-      border: 1.5px solid var(--boxborder);
+      border: 1.5px solid var(--ink);
       background: #fff;
       height: 26px;
       padding: 3px 7px;
@@ -189,13 +228,13 @@
     }
 
     .box:hover {
-      border-color: var(--header-bar);
+      border-color: var(--accent);
     }
 
     .box:focus {
       outline: none;
-      border-color: var(--header-bar);
-      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
     }
 
     /* ============================================================
@@ -213,8 +252,15 @@
       margin: 6px 0;
     }
 
-    .frow .box.md { flex: 1; min-width: 80px; }
-    .frow .box.sm { width: 80px; flex-shrink: 0; }
+    .frow .box.md {
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .frow .box.sm {
+      width: 80px;
+      flex-shrink: 0;
+    }
 
 
 
@@ -233,7 +279,7 @@
     /* divider line within a section */
     .divider {
       border: none;
-      border-top: 1px solid var(--line);
+      border-top: 1px solid var(--accent);
       margin: 10px 0;
     }
 
@@ -256,8 +302,8 @@
     }
 
     .copt:hover {
-      background: #faf3d6;
-      border-color: var(--header-bar);
+      background: color-mix(in srgb, var(--accent) 12%, #fff);
+      border-color: var(--accent);
     }
 
     .copt input[type=checkbox] {
@@ -280,7 +326,8 @@
     }
 
     /* card grid containers */
-    #bindingRows, #decorRows {
+    #bindingRows,
+    #decorRows {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 8px;
@@ -292,10 +339,10 @@
       font-weight: 700;
       letter-spacing: .06em;
       text-transform: uppercase;
-      color: var(--header-barlabel);
+      color: color-mix(in srgb, var(--accent) 65%, #000);
       margin-bottom: 6px;
       padding-bottom: 6px;
-      border-bottom: 1px solid var(--section-header-band);
+      border-bottom: 1px solid var(--surface);
     }
 
     .brow {
@@ -304,12 +351,14 @@
       gap: 6px;
       padding: 10px 12px;
       background: #fff;
-      border: 1px solid var(--section-header-band);
+      border: 1px solid var(--surface);
       border-radius: 5px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
       position: relative;
     }
-    .brow .rm:hover, .drow .rm:hover{
+
+    .brow .rm:hover,
+    .drow .rm:hover {
       background-color: rgb(255, 235, 235);
     }
 
@@ -319,7 +368,7 @@
       gap: 6px;
       padding: 10px 12px;
       background: #fff;
-      border: 1px solid var(--section-header-band);
+      border: 1px solid var(--surface);
       border-radius: 5px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
       position: relative;
@@ -360,15 +409,15 @@
       margin-top: 4px;
     }
 
-    .drow .msd-btn{
-      border:solid 1px var(--boxborder);
+    .drow .msd-btn {
+      border: solid 1px var(--ink);
       width: 100%;
     }
 
     .notebox {
       flex: 1 1 auto;
       min-height: 84px;
-      border: 1px solid var(--line);
+      border: 1px solid var(--accent);
       background: #fff;
       padding: 7px 8px;
       font: inherit;
@@ -379,13 +428,13 @@
     }
 
     .notebox:hover {
-      border-color: var(--header-bar);
+      border-color: var(--accent);
     }
 
     .notebox:focus {
       outline: none;
-      border-color: var(--header-bar);
-      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
     }
 
     .brow .rm,
@@ -397,7 +446,7 @@
 
     /* MSD button inside a brow card (e.g. sailcloth edge) */
     .brow .msd-btn {
-      border: solid 1px var(--boxborder);
+      border: solid 1px var(--ink);
       width: 100%;
     }
 
@@ -420,7 +469,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: #6B5610;
+      color: color-mix(in srgb, var(--accent) 55%, #000);
       font-size: 11px;
       font-weight: 700;
       letter-spacing: .05em;
@@ -430,7 +479,7 @@
 
     .msec .count {
       font-weight: 400;
-      color: #6f6a5a;
+      color: var(--muted);
       text-transform: none;
       letter-spacing: 0;
       font-size: 11px;
@@ -446,30 +495,34 @@
       font-size: 10px;
       font-weight: 700;
       letter-spacing: .03em;
-      color: #6f6a5a;
+      color: var(--muted);
       text-align: left;
       padding: 4px 8px;
-      border-bottom: 1px solid var(--line);
-      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--accent);
+      border-right: 1px solid var(--accent);
       text-transform: uppercase;
     }
 
-    .msec th:last-child { border-right: none; }
+    .msec th:last-child {
+      border-right: none;
+    }
 
     .msec td {
       padding: 0px;
-      border-bottom: 1px solid var(--line);
-      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--accent);
+      border-right: 1px solid var(--accent);
       vertical-align: middle;
       transition: background-color 0.1s ease;
     }
 
-    .msec td:last-child { border-right: none; }
+    .msec td:last-child {
+      border-right: none;
+    }
 
 
 
     .msec .num {
-      color: #6f6a5a;
+      color: var(--muted);
       text-align: center;
       font-size: 11px;
       width: 26px;
@@ -487,14 +540,14 @@
     }
 
     .msec input[type=text]:hover {
-      border-color: var(--header-bar);
+      border-color: var(--accent);
     }
 
     .msec input[type=text]:focus {
       outline: none;
       background: #fff;
-      border-color: var(--header-bar);
-      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
     }
 
     .msec .types {
@@ -516,7 +569,7 @@
     }
 
     .msec .types input[type=checkbox] {
-      accent-color: var(--boxborder);
+      accent-color: var(--ink);
       width: 12px;
       height: 12px;
       margin: 0;
@@ -537,8 +590,8 @@
 
     .addbtn {
       margin-top: 8px;
-      border: 1px solid var(--header-bar);
-      background: #faf3d6;
+      border: 1px solid var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, #fff);
       color: var(--ink);
       font: inherit;
       font-size: 11px;
@@ -551,23 +604,23 @@
     }
 
     .addbtn:hover {
-      background: #f0e4b0;
-      border-color: #a07d1a;
+      background: color-mix(in srgb, var(--accent) 25%, #fff);
+      border-color: color-mix(in srgb, var(--accent) 75%, #000);
     }
 
     .addbtn:active {
-      background: #e8d89a;
+      background: color-mix(in srgb, var(--accent) 38%, #fff);
     }
 
     .msec .mat-note {
       font-size: 10px;
-      color: #6f6a5a;
+      color: var(--muted);
       font-style: italic;
       margin: 12px 0 0;
     }
 
-    .mat-group + .mat-group {
-      border-top: 1px solid var(--section-header-band);
+    .mat-group+.mat-group {
+      border-top: 1px solid var(--surface);
       padding-top: 10px;
       margin-top: 4px;
     }
@@ -605,14 +658,14 @@
     }
 
     .cat-select:hover {
-      border-color: var(--header-bar);
+      border-color: var(--accent);
     }
 
     .cat-select:focus {
       outline: none;
       background: #fff;
-      border-color: var(--header-bar);
-      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
     }
 
     /* ============================================================
@@ -621,7 +674,8 @@
     .material-inputs {
       display: flex;
       align-items: stretch;
-      width: 100%;        /* fill the table cell */
+      width: 100%;
+      /* fill the table cell */
       gap: 0;
       min-width: 0;
     }
@@ -630,7 +684,7 @@
     .material-inputs input[type=text] {
       flex: 1;
       min-width: 48px;
-      border-right: 1px solid var(--line) !important;
+      border-right: 1px solid var(--accent) !important;
       border-radius: 0 !important;
     }
 
@@ -643,7 +697,7 @@
     .mat-decor-field {
       display: flex;
       align-items: center;
-      border-right: 1px solid var(--line);
+      border-right: 1px solid var(--accent);
     }
 
     .mat-decor-field:last-child {
@@ -672,28 +726,44 @@
       height: 100%;
     }
 
-    .mat-decor-dismiss:hover { opacity: 1; }
+    .mat-decor-dismiss:hover {
+      opacity: 1;
+    }
 
     /* Function detail card inputs — override .msec's transparent/borderless table styles */
     #fnCards input[type=text].box {
-      border: 1.5px solid var(--boxborder);
+      border: 1.5px solid var(--ink);
       background: #fff;
       width: 100%;
     }
-    #fnCards input[type=text].box:hover  { border-color: var(--header-bar); }
-    #fnCards input[type=text].box:focus  {
-      outline: none;
-      border-color: var(--header-bar);
-      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+
+    #fnCards input[type=text].box:hover {
+      border-color: var(--accent);
     }
+
+    #fnCards input[type=text].box:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+
     /* MSD inside fn cards: match brow style, fill full width */
-    #fnCards .fn-msd-wrap { width: 100%; }
-    #fnCards .fn-msd-wrap .msd { width: 100%; }
-    #fnCards .fn-msd-wrap .msd-btn { border: solid 1px var(--boxborder); width: 100%; }
+    #fnCards .fn-msd-wrap {
+      width: 100%;
+    }
+
+    #fnCards .fn-msd-wrap .msd {
+      width: 100%;
+    }
+
+    #fnCards .fn-msd-wrap .msd-btn {
+      border: solid 1px var(--ink);
+      width: 100%;
+    }
 
     .mat-decor-btn {
       border: none;
-      background: #faf3d6;
+      background: color-mix(in srgb, var(--accent) 12%, #fff);
       color: var(--ink);
       font: inherit;
       font-size: 10px;
@@ -707,7 +777,7 @@
     }
 
     .mat-decor-btn:hover {
-      background: #f0e4b0;
+      background: color-mix(in srgb, var(--accent) 25%, #fff);
     }
 
     .mat-decor-input {
@@ -733,13 +803,16 @@
         -webkit-appearance: none;
         padding-right: 0;
       }
+
       .mat-decor-btn {
         display: none !important;
       }
+
       /* Hide inputs; show pre-formatted print span instead */
       .material-inputs {
         display: none !important;
       }
+
       .mat-print {
         display: inline;
       }
@@ -751,8 +824,8 @@
     .drop-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(201, 161, 44, .12);
-      border: 4px dashed var(--header-bar);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border: 4px dashed var(--accent);
       z-index: 600;
       display: flex;
       align-items: center;
@@ -774,7 +847,7 @@
       font-weight: 800;
       letter-spacing: .03em;
       text-transform: uppercase;
-      color: var(--header-bar);
+      color: var(--accent);
     }
 
     .drop-overlay-box small {
@@ -784,11 +857,16 @@
       color: #888;
     }
 
-    .print-footer { display: none; }
-    #stateEmbed   { display: none; }
+    .print-footer {
+      display: none;
+    }
+
+    #stateEmbed {
+      display: none;
+    }
 
     /* Hide int table (not button) on screen when empty */
-    .mat-group:has(#intBody:empty) > table {
+    .mat-group:has(#intBody:empty)>table {
       display: none;
     }
 
@@ -836,7 +914,7 @@
     }
 
     .btn-cancel {
-      border: 1px solid var(--section-header-band);
+      border: 1px solid var(--surface);
       background: #fff;
       color: var(--ink);
       font: inherit;
@@ -848,11 +926,13 @@
       transition: background-color 0.15s;
     }
 
-    .btn-cancel:hover { background: #f5f5f2; }
+    .btn-cancel:hover {
+      background: #f5f5f2;
+    }
 
     .btn-confirm {
-      border: 1px solid var(--header-bar);
-      background: var(--header-bar);
+      border: 1px solid var(--accent);
+      background: var(--accent);
       color: #fff;
       font: inherit;
       font-size: 11px;
@@ -864,8 +944,8 @@
     }
 
     .btn-confirm:hover {
-      background: #b08020;
-      border-color: #b08020;
+      background: color-mix(in srgb, var(--accent) 80%, #000);
+      border-color: color-mix(in srgb, var(--accent) 80%, #000);
     }
 
     .print-toast {
@@ -885,7 +965,7 @@
     }
 
     .title .lab {
-      color: var(--header-color);
+      color: var(--on-accent);
     }
 
     .types label {
@@ -900,13 +980,13 @@
     }
 
     .types label:hover {
-      background: #faf3d6;
-      border-color: var(--header-bar);
+      background: color-mix(in srgb, var(--accent) 12%, #fff);
+      border-color: var(--accent);
     }
 
     .types label:has(input:checked) {
-      background: var(--panel);
-      border-color: var(--header-bar);
+      background: var(--surface);
+      border-color: var(--accent);
     }
 
     /* ============================================================
@@ -914,7 +994,7 @@
      ============================================================ */
     .seg-toggle {
       display: inline-flex;
-      border: 1.5px solid var(--boxborder);
+      border: 1.5px solid var(--ink);
       border-radius: 3px;
       overflow: hidden;
       height: 26px;
@@ -935,7 +1015,7 @@
       font-size: 11px;
       font-weight: 600;
       cursor: pointer;
-      border-right: 1px solid var(--boxborder);
+      border-right: 1px solid var(--ink);
       transition: background-color 0.15s ease, color 0.15s ease;
       user-select: none;
       color: var(--ink);
@@ -946,16 +1026,16 @@
       border-right: none;
     }
 
-    .seg-toggle input:checked + label {
+    .seg-toggle input:checked+label {
       background: var(--ink);
       color: #fff;
     }
 
     .seg-toggle label:hover {
-      background: #faf3d6;
+      background: color-mix(in srgb, var(--accent) 12%, #fff);
     }
 
-    .seg-toggle input:checked + label:hover {
+    .seg-toggle input:checked+label:hover {
       background: var(--ink);
       color: #fff;
     }
@@ -995,7 +1075,7 @@
       border-style: solid;
       border-width: 0px .5px;
       border-radius: 0px;
-      border-color: var(--help-text);
+      border-color: var(--muted);
     }
 
     .msec td .msd-btn {
@@ -1008,24 +1088,25 @@
       font-size: 12px;
     }
 
-    .msec td:has(.rm){
+    .msec td:has(.rm) {
       align-items: center;
-      border-left: solid .5px var(--help-text);
+      border-left: solid .5px var(--muted);
     }
-    .msec td:has(.rm):hover{
+
+    .msec td:has(.rm):hover {
       color: #811;
       background: rgba(187, 51, 68, 0.1);
     }
-    
+
 
     .msd-btn:hover {
-      border-color: var(--header-bar);
+      border-color: var(--accent);
     }
 
     .msd-btn:focus {
       outline: none;
-      border-color: var(--header-bar);
-      box-shadow: 0 0 0 2px rgba(201, 161, 44, .35);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
     }
 
     .msd-val {
@@ -1047,7 +1128,7 @@
       top: calc(100% + 3px);
       left: 0;
       background: #fff;
-      border: 1px solid var(--boxborder);
+      border: 1px solid var(--ink);
       border-radius: 4px;
       box-shadow: 0 3px 10px rgba(0, 0, 0, .12);
       z-index: 100;
@@ -1068,18 +1149,19 @@
 
     .msd-opt:hover,
     .msd-opt:focus {
-      background: #faf3d6;
+      background: color-mix(in srgb, var(--accent) 12%, #fff);
       outline: none;
     }
 
     .msd-opt input[type=checkbox] {
-      accent-color: var(--boxborder);
+      accent-color: var(--ink);
       width: 12px;
       height: 12px;
       margin: 0;
       flex-shrink: 0;
     }
-    #sailclothEdgeMsd button{
+
+    #sailclothEdgeMsd button {
       border-width: .5px;
     }
 
@@ -1094,10 +1176,40 @@
       gap: 8px;
     }
 
-    .save-pdf-btn {
-      background: var(--header-bar);
-      color: #fff;
+    /* ============================================================
+     ACCENT COLOR PICKER
+     ============================================================ */
+    .accent-swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 100%;
+      border: 1.5px solid rgba(0, 0, 0, .18);
+      cursor: pointer;
+      background: var(--accent);
+      position: relative;
+      flex-shrink: 0;
+      transition: border-color 0.15s;
+    }
+
+    .accent-swatch:hover {
+      border-color: rgba(0, 0, 0, .4);
+    }
+
+    .accent-swatch input[type=color] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
       border: none;
+      padding: 0;
+    }
+
+    .save-pdf-btn {
+      background: var(--accent);
+      color: var(--on-accent);
+      border: 1.5px solid rgba(0, 0, 0, .18);
       font: inherit;
       font-size: 12px;
       font-weight: 700;
@@ -1108,8 +1220,13 @@
       transition: background-color 0.15s;
     }
 
-    .save-pdf-btn:hover { background: #b08020; }
-    .save-pdf-btn:active { background: #9a6e18; }
+    .save-pdf-btn:hover {
+      background: color-mix(in srgb, var(--accent) 80%, #000);
+    }
+
+    .save-pdf-btn:active {
+      background: color-mix(in srgb, var(--accent) 65%, #000);
+    }
 
     /* ============================================================
      PRINT
@@ -1117,15 +1234,11 @@
 
     @media print {
       :root {
-        --header-bar: #ffffff;
-        --header-color: #000000;
-        --section-header-band: #e1e1e1;
-        --panel: #f3f3f3;
-        --ink: #262626;
-        --boxborder: #3A3A3A;
-        --line: #c6c6c6;
-        --header-barlabel: #929292;
-        --help-text: #939393;
+        --accent:     #ffffff;
+        --on-accent:  var(--ink);
+        --ink:        #262626;
+        --muted:   #939393;
+        --surface: #e1e1e1;
         --padding: 24px;
       }
 
@@ -1137,6 +1250,19 @@
 
       .title {
         padding-bottom: 0;
+        color: var(--ink);     /* --accent is #fff in print; prevent white-on-white */
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      /* Grid lines and dividers: restore visible gray since --accent is white in print */
+      .msec th,
+      .msec td,
+      .material-inputs input[type=text] {
+        border-color: #c6c6c6;
+      }
+      .divider {
+        border-top-color: #c6c6c6;
       }
 
       button:not(.msd-btn) {
@@ -1163,7 +1289,10 @@
         display: none;
       }
 
-      .print-overlay, .print-toast, .drop-overlay, .toolbar {
+      .print-overlay,
+      .print-toast,
+      .drop-overlay,
+      .toolbar {
         display: none !important;
       }
 
@@ -1193,7 +1322,8 @@
         z-index: 0;
       }
 
-      .brow, .drow {
+      .brow,
+      .drow {
         box-shadow: none;
         border-color: #d0d0d0;
       }
@@ -1208,11 +1338,11 @@
         display: none;
       }
 
-      .seg-toggle input:not(:checked) + label {
+      .seg-toggle input:not(:checked)+label {
         display: none;
       }
 
-      .seg-toggle input:checked + label {
+      .seg-toggle input:checked+label {
         background: transparent;
         color: var(--ink);
         padding: 0;
@@ -1225,9 +1355,11 @@
         color: #999;
         font-style: italic;
       }
-      .msd-btn{
+
+      .msd-btn {
         background-color: transparent;
       }
+
       .msd-caret {
         display: none;
       }
@@ -1235,7 +1367,8 @@
       .msd-panel {
         display: none !important;
       }
-      .colrm{
+
+      .colrm {
         display: none;
       }
 
@@ -1245,12 +1378,21 @@
         background: transparent;
         padding-bottom: 2px;
       }
-      .ns-info { display: none; }
+
+      .ns-info {
+        display: none;
+      }
 
       /* Non-standard label: hide checkbox, hide whole label if unchecked */
-      .ns-label input[type=checkbox] { display: none; }
-      .ns-label:not(:has(input:checked)) { display: none; }
-      .ns-label:has(input:checked){
+      .ns-label input[type=checkbox] {
+        display: none;
+      }
+
+      .ns-label:not(:has(input:checked)) {
+        display: none;
+      }
+
+      .ns-label:has(input:checked) {
         background-color: red;
         color: white;
         font-weight: 800;
@@ -1262,15 +1404,20 @@
         margin: 0;
       }
     }
-
   </style>
 </head>
 
 <body>
   <!-- Toolbar -->
   <div class="toolbar">
-    <span style="font-size:11px; font-style:italic; color:#888; align-self:center;">Drop a saved sheet anywhere to reload it</span>
-    <button class="save-pdf-btn" onclick="doSave()">⬇ Save as PDF</button>
+    <span style="font-size:11px; font-style:italic; color:#888; align-self:center;">Drop a saved sheet anywhere to
+      reload it</span>
+    <span style="display:inline-flex; align-items:center; gap:16px;">
+      <button class="save-pdf-btn" onclick="doSave()">⬇ Save as PDF</button>
+      <span class="accent-swatch" id="accentSwatch">
+        <input type="color" id="accentPicker" value="#C9A12C" title="Choose accent color">
+      </span>
+    </span>
   </div>
 
   <div class="sheet">
@@ -1286,20 +1433,22 @@
 
         <div class="input-wrap">
           <span class="lab">Job Number:</span>
-          <input type="text" id="job-number" class="box sm" inputmode="numeric" pattern="\d{1,6}" maxlength="6" placeholder="000000" oninput="this.value=this.value.replace(/\D/g,'')">
+          <input type="text" id="job-number" class="box sm" inputmode="numeric" pattern="\d{1,6}" maxlength="6"
+            placeholder="000000" oninput="this.value=this.value.replace(/\D/g,'')">
         </div>
       </div>
     </div>
 
     <!-- Stage banner: hidden on screen, highlighted strip on print -->
-    
+
 
     <div class="body">
 
       <!-- ===== META STRIP: Non-Standard flag (left) + Stage toggle (right) ===== -->
       <div class="meta-strip">
-        
-        <label class="copt ns-label" title="Check this box when the job uses new materials or unusual construction methods">
+
+        <label class="copt ns-label"
+          title="Check this box when the job uses new materials or unusual construction methods">
           <input type="checkbox" id="nonStandardCb">
           Non-Standard Configuration
         </label>
@@ -1351,8 +1500,8 @@
         Material
         <div class="count-group">
           <span class="count" id="extCount">1 ext</span>
-         / 
-         <span class="count" id="intCount">0 int</span>
+          /
+          <span class="count" id="intCount">0 int</span>
         </div>
       </div>
       <div class="msec">
@@ -1386,10 +1535,12 @@
           </table>
           <div class="btnrow">
             <button class="addbtn" onclick="addRow('int')">+ Add Interior Material</button>
-          <button class="addbtn" id="ccIntAdd" onclick="addStandardCCInterior()" style="display:inline-block;">+ Add Standard CC Interior</button>
+            <button class="addbtn" id="ccIntAdd" onclick="addStandardCCInterior()" style="display:inline-block;">+ Add
+              Standard CC Interior</button>
           </div>
         </div>
-        <div id="fnCards" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;"></div>
+        <div id="fnCards" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
+        </div>
       </div>
 
       <!-- ===== SECTION 4: CUSTOMIZATIONS (sailcloth + custom board) ===== -->
@@ -1399,7 +1550,8 @@
           <button class="addbtn" id="sailclothAdd" onclick="showSailcloth(true)">+ Add Sailcloth Reveal</button>
           <button class="addbtn" id="customBoardAdd" onclick="showCustomBoard(true)">+ Add Custom Board Type</button>
         </div>
-        <div id="customizationRows" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 8px;">
+        <div id="customizationRows"
+          style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 8px;">
 
           <div class="brow" id="sailclothRow" style="display:none;">
             <span class="btype">Sailcloth Reveal</span>
@@ -1415,9 +1567,12 @@
                   <span class="msd-caret">▾</span>
                 </button>
                 <div class="msd-panel" style="display:none;">
-                  <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox" value="Exposed" onchange="msdUpdate(this)"> Exposed</label>
-                  <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox" value="Closed" onchange="msdUpdate(this)"> Closed</label>
-                  <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox" value="Flush" onchange="msdUpdate(this)"> Flush</label>
+                  <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox"
+                      value="Exposed" onchange="msdUpdate(this)"> Exposed</label>
+                  <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox"
+                      value="Closed" onchange="msdUpdate(this)"> Closed</label>
+                  <label class="msd-opt" tabindex="-1" onkeydown="msdOptKeydown(event,this)"><input type="checkbox"
+                      value="Flush" onchange="msdUpdate(this)"> Flush</label>
                 </div>
               </div>
             </div>
@@ -1550,20 +1705,20 @@
        Appear below the material tables when interior functions are selected.
     ─────────────────────────────────────────────────────────────── */
     var FN_CARD_CONFIG = {
-      'Liner':    [
+      'Liner': [
         { id: 'location', label: 'Location' },
-        { id: 'size',     label: 'Size' }
+        { id: 'size', label: 'Size' }
       ],
-      'Panels':   [
+      'Panels': [
         { id: 'location', label: 'Location' },
-        { id: 'size',     label: 'Size' }
+        { id: 'size', label: 'Size' }
       ],
-      'Pockets':  [
-        { id: 'size',     label: 'Size' },
-        { id: 'type',     label: 'Type', type: 'msd', placeholder: 'None Selected', options: ['Angled', 'Flat', 'CC'] },
+      'Pockets': [
+        { id: 'size', label: 'Size' },
+        { id: 'type', label: 'Type', type: 'msd', placeholder: 'None Selected', options: ['Angled', 'Flat', 'CC'] },
         { id: 'location', label: 'Location' }
       ],
-      'CC Slot':  [
+      'CC Slot': [
         { id: 'location', label: 'Location' }
       ],
       'Pen Loop': [
@@ -1580,11 +1735,11 @@
 
       // Build desired list: for each fn (in order), collect rows that have it checked
       var desired = [];
-      FN_CARD_ORDER.forEach(function(fn) {
-        rowEls.forEach(function(tr) {
+      FN_CARD_ORDER.forEach(function (fn) {
+        rowEls.forEach(function (tr) {
           var msd = tr.querySelector('.msd');
           if (!msd) return;
-          var checked = Array.from(msd.querySelectorAll('input:checked')).map(function(i) { return i.value; });
+          var checked = Array.from(msd.querySelectorAll('input:checked')).map(function (i) { return i.value; });
           if (checked.indexOf(fn) !== -1) {
             desired.push({ rowId: tr.dataset.rowId, fn: fn });
           }
@@ -1593,21 +1748,21 @@
 
       // Build desired key set
       var desiredKeys = {};
-      desired.forEach(function(d) { desiredKeys[d.fn + '::' + d.rowId] = true; });
+      desired.forEach(function (d) { desiredKeys[d.fn + '::' + d.rowId] = true; });
 
       // Remove stale cards
-      Array.from(container.querySelectorAll('.brow[data-fn][data-row-id]')).forEach(function(card) {
+      Array.from(container.querySelectorAll('.brow[data-fn][data-row-id]')).forEach(function (card) {
         if (!desiredKeys[card.dataset.fn + '::' + card.dataset.rowId]) card.remove();
       });
 
       // Add missing cards
-      desired.forEach(function(d) {
+      desired.forEach(function (d) {
         if (container.querySelector('.brow[data-fn="' + d.fn + '"][data-row-id="' + d.rowId + '"]')) return;
         var cfg = FN_CARD_CONFIG[d.fn];
         if (!cfg) return;
 
         var html = '<span class="btype">' + d.fn + '</span>';
-        cfg.forEach(function(f) {
+        cfg.forEach(function (f) {
           html += '<div class="card-field">';
           if (f.label) html += '<span class="lab">' + f.label + '</span>';
           if (f.type === 'msd') {
@@ -1628,15 +1783,15 @@
       });
 
       // Sort cards into desired order
-      desired.forEach(function(d) {
+      desired.forEach(function (d) {
         var card = container.querySelector('.brow[data-fn="' + d.fn + '"][data-row-id="' + d.rowId + '"]');
         if (card) container.appendChild(card);
       });
 
       // Renumber within each fn type
-      FN_CARD_ORDER.forEach(function(fn) {
+      FN_CARD_ORDER.forEach(function (fn) {
         var cards = Array.from(container.querySelectorAll('.brow[data-fn="' + fn + '"]'));
-        cards.forEach(function(card, i) {
+        cards.forEach(function (card, i) {
           card.querySelector('.btype').textContent = cards.length > 1 ? fn + ' ' + (i + 1) : fn;
         });
       });
@@ -1687,16 +1842,16 @@
     /** Build all shared <datalist> elements once at page load. */
     function initDataLists() {
       var frag = document.createDocumentFragment();
-      MATERIAL_CONFIG.categories.forEach(function(cat) {
+      MATERIAL_CONFIG.categories.forEach(function (cat) {
         var cfg = MATERIAL_CONFIG.fields[cat];
         if (!cfg) return;
-        (cfg.inputs || []).forEach(function(field) {
+        (cfg.inputs || []).forEach(function (field) {
           if (!field.autocomplete) return;
           var dlId = dlIdFor(cat, field.id);
           if (document.getElementById(dlId)) return;
           var dl = document.createElement('datalist');
           dl.id = dlId;
-          field.autocomplete.forEach(function(opt) {
+          field.autocomplete.forEach(function (opt) {
             var o = document.createElement('option');
             o.value = opt;
             dl.appendChild(o);
@@ -1714,13 +1869,13 @@
     /** Build the category <select> HTML for a section.
      *  Interior only shows categories with interior: true. */
     function buildCategorySelectHtml(sec) {
-      var cats = MATERIAL_CONFIG.categories.filter(function(cat) {
+      var cats = MATERIAL_CONFIG.categories.filter(function (cat) {
         if (sec !== 'int') return true;
         var cfg = MATERIAL_CONFIG.fields[cat];
         return cfg && cfg.interior;
       });
       var opts = '<option value="">—</option>';
-      cats.forEach(function(cat) {
+      cats.forEach(function (cat) {
         opts += '<option value="' + cat + '">' + cat + '</option>';
       });
       return '<select class="cat-select" onchange="updateMaterialCell(this)">' + opts + '</select>';
@@ -1736,7 +1891,7 @@
 
       var html = '<div class="material-inputs">';
       if (cfg) {
-        (cfg.inputs || []).forEach(function(field) {
+        (cfg.inputs || []).forEach(function (field) {
           if (field.type === 'decoration') {
             html += '<div class="mat-decor-field">' +
               '<button type="button" title="Add Decoration" class="mat-decor-btn" onclick="toggleDecoration(this)" disabled>+</button>' +
@@ -1754,20 +1909,20 @@
       cell.innerHTML = html;
 
       // Bind input events so the print span updates live as the user types
-      cell.querySelectorAll('.material-inputs input[type=text]').forEach(function(inp) {
-        inp.addEventListener('input', function() { updatePrintSpan(tr); });
+      cell.querySelectorAll('.material-inputs input[type=text]').forEach(function (inp) {
+        inp.addEventListener('input', function () { updatePrintSpan(tr); });
       });
 
       // Enable decoration button only when Vendor is Majilite
       var vendorInp = cell.querySelector('input[data-field-id="vendor"]');
-      var decorBtn  = cell.querySelector('.mat-decor-btn');
+      var decorBtn = cell.querySelector('.mat-decor-btn');
       if (vendorInp && decorBtn) {
         function syncDecorBtn() {
           var isMajilite = vendorInp.value.trim().toLowerCase() === 'majilite';
           decorBtn.disabled = !isMajilite;
           decorBtn.title = isMajilite ? 'Add Decoration' : 'Decoration only available for Majilite';
         }
-        vendorInp.addEventListener('input', function() {
+        vendorInp.addEventListener('input', function () {
           syncDecorBtn();
           // If vendor changes away from Majilite, dismiss decoration if open
           if (vendorInp.value.trim().toLowerCase() !== 'majilite') {
@@ -1796,13 +1951,13 @@
 
       // Collect values by data-field-id; skip hidden inputs (decoration not yet revealed)
       var values = {};
-      tr.querySelectorAll('.material-inputs input[type=text]').forEach(function(inp) {
+      tr.querySelectorAll('.material-inputs input[type=text]').forEach(function (inp) {
         var id = inp.dataset.fieldId;
         if (id && inp.style.display !== 'none') values[id] = inp.value.trim();
       });
 
       try { span.textContent = cfg.printTemplate(values); }
-      catch(e) { span.textContent = ''; }
+      catch (e) { span.textContent = ''; }
     }
 
     /** Reveal the decoration text input when the button is clicked. */
@@ -1864,7 +2019,7 @@
         var tr = btn.closest('tr');
         var catSelect = tr.querySelector('.cat-select');
         if (catSelect) { catSelect.value = ''; updateMaterialCell(catSelect); }
-        tr.querySelectorAll('input[type=text]').forEach(function(i) { i.value = ''; });
+        tr.querySelectorAll('input[type=text]').forEach(function (i) { i.value = ''; });
         return;
       }
       btn.closest("tr").remove();
@@ -1892,9 +2047,9 @@
       card.innerHTML =
         '<span class="btype">Standard CC Interior</span>' +
         '<div class="card-field" style="font-size:11px; color:var(--ink); line-height:1.5;">' +
-          'Black Lexide Panel<br>' +
-          'Regular Black Angled Pocket<br>' +
-          'CC Slot' +
+        'Black Lexide Panel<br>' +
+        'Regular Black Angled Pocket<br>' +
+        'CC Slot' +
         '</div>' +
         '<button class="rm" title="Remove" onclick="removeStandardCCInterior()">&times;</button>';
       document.getElementById('fnCards').appendChild(card);
@@ -1916,7 +2071,7 @@
       }
     }
     var BINDING_ORDER = ['corners', 'tabs', 'cord', 'screw', 'ring', 'clips', 'bands', 'other'];
-    var DECOR_ORDER  = ['deboss', 'emboss', 'diecut', 'laser', 'colorprint', 'other'];
+    var DECOR_ORDER = ['deboss', 'emboss', 'diecut', 'laser', 'colorprint', 'other'];
     function insertOrdered(containerId, el, key, order) {
       var container = document.getElementById(containerId);
       var idx = order.indexOf(key);
@@ -2051,7 +2206,7 @@
     function renumberDecor(key) {
       var rows = Array.from(document.querySelectorAll('.drow[data-key="' + key + '"]'));
       var label = DECOR[key].label;
-      rows.forEach(function(row, i) {
+      rows.forEach(function (row, i) {
         row.querySelector('.btype').textContent = rows.length > 1 ? label + ' ' + (i + 1) : label;
       });
     }
@@ -2105,9 +2260,9 @@
 
     function msdOptKeydown(e, label) {
       var panel = label.closest('.msd-panel');
-      var msd   = label.closest('.msd');
-      var opts  = Array.from(panel.querySelectorAll('.msd-opt'));
-      var idx   = opts.indexOf(label);
+      var msd = label.closest('.msd');
+      var opts = Array.from(panel.querySelectorAll('.msd-opt'));
+      var idx = opts.indexOf(label);
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         if (idx < opts.length - 1) opts[idx + 1].focus();
@@ -2145,14 +2300,14 @@
     document.addEventListener('keydown', function (e) {
       var t = e.target;
       var inMatInput = t.matches && t.matches('.msec input[type=text]');
-      var inMatMsd   = t.matches && t.matches('.msec .msd-btn');
+      var inMatMsd = t.matches && t.matches('.msec .msd-btn');
       if (!inMatInput && !inMatMsd) return;
 
       var td = t.closest('td');
       var tr = td.closest('tr');
       var colIdx = Array.from(tr.cells).indexOf(td);
-      var tbody  = tr.closest('tbody');
-      var rows   = Array.from(tbody.rows);
+      var tbody = tr.closest('tbody');
+      var rows = Array.from(tbody.rows);
       var rowIdx = rows.indexOf(tr);
 
       function focusCell(r, col) {
@@ -2202,7 +2357,7 @@
     if (designerEl) {
       var saved = localStorage.getItem('mcs_designer');
       if (saved) designerEl.value = saved;
-      designerEl.addEventListener('input', function() {
+      designerEl.addEventListener('input', function () {
         localStorage.setItem('mcs_designer', designerEl.value);
       });
     }
@@ -2215,12 +2370,12 @@
 
       // Only count visible material inputs (excludes hidden decoration input)
       var matVals = Array.from(tr.querySelectorAll('.material-inputs input[type=text]'))
-        .filter(function(i) { return i.style.display !== 'none'; })
-        .map(function(i) { return i.value.trim(); });
+        .filter(function (i) { return i.style.display !== 'none'; })
+        .map(function (i) { return i.value.trim(); });
 
       // Ext: function is a text input; Int: function is an MSD multi-select
       var fnInput = tr.querySelector('.fn-input');
-      var fnMsd   = tr.querySelector('td .msd');
+      var fnMsd = tr.querySelector('td .msd');
       var fnVal = fnInput
         ? fnInput.value.trim()
         : (fnMsd ? (fnMsd.querySelector('.msd-val').textContent.trim() !== fnMsd.dataset.placeholder ? 'selected' : '') : '');
@@ -2229,12 +2384,12 @@
     }
 
     function isRowEmpty(tr) {
-      return matRowFields(tr).every(function(v) { return v === ''; });
+      return matRowFields(tr).every(function (v) { return v === ''; });
     }
 
     function isRowIncomplete(tr) {
       var vals = matRowFields(tr);
-      var filled = vals.filter(function(v) { return v !== ''; }).length;
+      var filled = vals.filter(function (v) { return v !== ''; }).length;
       return filled > 0 && filled < vals.length;
     }
 
@@ -2242,7 +2397,7 @@
       var el = document.getElementById('printToast');
       el.textContent = msg;
       el.style.display = 'block';
-      setTimeout(function() { el.style.display = 'none'; }, 4000);
+      setTimeout(function () { el.style.display = 'none'; }, 4000);
     }
 
     function showModal(title, msg, confirmLabel, onConfirm) {
@@ -2251,11 +2406,11 @@
       document.getElementById('printModalConfirm').textContent = confirmLabel;
       var overlay = document.getElementById('printOverlay');
       overlay.style.display = 'flex';
-      document.getElementById('printModalConfirm').onclick = function() {
+      document.getElementById('printModalConfirm').onclick = function () {
         overlay.style.display = 'none';
         onConfirm();
       };
-      document.getElementById('printModalCancel').onclick = function() {
+      document.getElementById('printModalCancel').onclick = function () {
         overlay.style.display = 'none';
       };
     }
@@ -2286,7 +2441,7 @@
       function doBindingDecorCheck() {
         var incomplete = [];
 
-        document.querySelectorAll('.brow').forEach(function(card) {
+        document.querySelectorAll('.brow').forEach(function (card) {
           // Skip hidden cards (sailcloth/customboard when not added)
           if (card.style.display === 'none') return;
           // Skip fn detail cards (supplementary, not required) and Standard CC Interior
@@ -2294,26 +2449,26 @@
 
           var label = card.querySelector('.btype').textContent.trim();
           var hasIssue = false;
-          card.querySelectorAll('input[type=text], textarea').forEach(function(inp) {
+          card.querySelectorAll('input[type=text], textarea').forEach(function (inp) {
             if (!inp.value.trim()) hasIssue = true;
           });
           if (hasIssue) incomplete.push(label);
         });
 
-        document.querySelectorAll('.drow').forEach(function(card) {
+        document.querySelectorAll('.drow').forEach(function (card) {
           var label = card.querySelector('.btype').textContent.trim();
           var hasIssue = false;
           var d = card.querySelector('.dctrls');
           // Visible text inputs and textareas
-          d.querySelectorAll('input[type=text], textarea').forEach(function(inp) {
+          d.querySelectorAll('input[type=text], textarea').forEach(function (inp) {
             if (inp.style.display !== 'none' && !inp.value.trim()) hasIssue = true;
           });
           // Seg-toggles: one must be selected
-          d.querySelectorAll('.seg-toggle').forEach(function(tog) {
+          d.querySelectorAll('.seg-toggle').forEach(function (tog) {
             if (!tog.querySelector('input:checked')) hasIssue = true;
           });
           // MSD dropdowns: must not be at placeholder
-          d.querySelectorAll('.msd').forEach(function(msd) {
+          d.querySelectorAll('.msd').forEach(function (msd) {
             var val = msd.querySelector('.msd-val').textContent.trim();
             if (val === (msd.dataset.placeholder || '')) hasIssue = true;
           });
@@ -2332,7 +2487,7 @@
         var intRows = Array.from(document.getElementById('intBody').children);
         var allRows = extRows.concat(intRows);
 
-        var hasDefinedExt = extRows.some(function(tr) {
+        var hasDefinedExt = extRows.some(function (tr) {
           var cat = tr.querySelector('.cat-select');
           return cat && cat.value !== '';
         });
@@ -2364,8 +2519,8 @@
             'Empty rows found',
             n + ' empty material row' + (n > 1 ? 's were' : ' was') + ' found. Remove ' + (n > 1 ? 'them' : 'it') + ' and continue, or cancel to review.',
             'Remove & Save',
-            function() {
-              emptyRows.forEach(function(tr) { tr.remove(); });
+            function () {
+              emptyRows.forEach(function (tr) { tr.remove(); });
               renumber('ext');
               renumber('int');
               var remaining = Array.from(document.getElementById('extBody').children)
@@ -2385,14 +2540,14 @@
       var keyFields = [
         { label: 'Property Name', el: document.querySelectorAll('.header-panel .box')[0] },
         { label: 'Job Description', el: document.querySelectorAll('.header-panel .box')[1] },
-        { label: 'Cover Size',   el: sizeInputs[0] },
-        { label: 'Insert Size',  el: sizeInputs[1] },
+        { label: 'Cover Size', el: sizeInputs[0] },
+        { label: 'Insert Size', el: sizeInputs[1] },
         { label: 'Insert Count', el: sizeInputs[2] }
       ];
-      var emptyKey = keyFields.filter(function(f) { return f.el && !f.el.value.trim(); });
+      var emptyKey = keyFields.filter(function (f) { return f.el && !f.el.value.trim(); });
 
       if (emptyKey.length > 0) {
-        var names = emptyKey.map(function(f) { return f.label; }).join(', ');
+        var names = emptyKey.map(function (f) { return f.label; }).join(', ');
         showToast('Please fill in: ' + names + '.');
         return;
       }
@@ -2419,8 +2574,8 @@
       s.desc = hi[1] ? hi[1].value : '';
 
       var si = document.querySelectorAll('.section .frow .box');
-      s.cov  = si[0] ? si[0].value : '';
-      s.ins  = si[1] ? si[1].value : '';
+      s.cov = si[0] ? si[0].value : '';
+      s.ins = si[1] ? si[1].value : '';
       s.insc = si[2] ? si[2].value : '';
 
       var scRow = document.getElementById('sailclothRow');
@@ -2428,7 +2583,7 @@
         var scT = scRow.querySelectorAll('input[type=text]');
         s.sc = {
           s: scT[0] ? scT[0].value : '',
-          e: Array.from(scRow.querySelectorAll('.msd input:checked')).map(function(i) { return i.value; })
+          e: Array.from(scRow.querySelectorAll('.msd input:checked')).map(function (i) { return i.value; })
         };
       }
 
@@ -2439,13 +2594,13 @@
 
       function capRows(id) {
         var sec = id.replace('Body', '');
-        return Array.from(document.getElementById(id).rows).map(function(tr) {
+        return Array.from(document.getElementById(id).rows).map(function (tr) {
           var catSelect = tr.querySelector('.cat-select');
           var cat = catSelect ? catSelect.value : '';
 
           var mat = Array.from(tr.querySelectorAll('.material-inputs input[type=text]'))
-            .filter(function(i) { return i.style.display !== 'none'; })
-            .map(function(i) { return i.value; });
+            .filter(function (i) { return i.style.display !== 'none'; })
+            .map(function (i) { return i.value; });
 
           var decorInput = tr.querySelector('.mat-decor-input');
           var decor = (decorInput && decorInput.style.display !== 'none') ? decorInput.value : null;
@@ -2458,7 +2613,7 @@
           } else {
             var fnMsd = tr.querySelector('td .msd');
             fnArr = fnMsd
-              ? Array.from(fnMsd.querySelectorAll('input:checked')).map(function(i) { return i.value; })
+              ? Array.from(fnMsd.querySelectorAll('input:checked')).map(function (i) { return i.value; })
               : [];
           }
 
@@ -2469,41 +2624,41 @@
       s.int = capRows('intBody');
 
       // fn cards: capture as ordered array matching card display order
-      s.fnCards = Array.from(document.querySelectorAll('#fnCards .brow[data-fn]')).map(function(card) {
+      s.fnCards = Array.from(document.querySelectorAll('#fnCards .brow[data-fn]')).map(function (card) {
         var data = {};
-        card.querySelectorAll('input[data-fn-field]').forEach(function(inp) {
+        card.querySelectorAll('input[data-fn-field]').forEach(function (inp) {
           data[inp.dataset.fnField] = inp.value;
         });
-        card.querySelectorAll('.fn-msd-wrap[data-fn-field]').forEach(function(wrap) {
-          data[wrap.dataset.fnField] = Array.from(wrap.querySelectorAll('input:checked')).map(function(i) { return i.value; });
+        card.querySelectorAll('.fn-msd-wrap[data-fn-field]').forEach(function (wrap) {
+          data[wrap.dataset.fnField] = Array.from(wrap.querySelectorAll('input:checked')).map(function (i) { return i.value; });
         });
         return { fn: card.dataset.fn, data: data };
       });
       s.ccInt = !!document.getElementById('ccIntCard');
 
       s.bind = {};
-      Object.keys(BINDING).forEach(function(key) {
+      Object.keys(BINDING).forEach(function (key) {
         var row = document.getElementById('brow-' + key);
-        if (row) s.bind[key] = Array.from(row.querySelectorAll('input[type=text], textarea')).map(function(i) { return i.value; });
+        if (row) s.bind[key] = Array.from(row.querySelectorAll('input[type=text], textarea')).map(function (i) { return i.value; });
       });
 
       s.decor = {};
-      Object.keys(DECOR).forEach(function(key) {
+      Object.keys(DECOR).forEach(function (key) {
         var rows = Array.from(document.querySelectorAll('.drow[data-key="' + key + '"]'));
         if (rows.length === 0) return;
-        s.decor[key] = rows.map(function(row) {
+        s.decor[key] = rows.map(function (row) {
           var d = row.querySelector('.dctrls');
           return {
-            t: Array.from(d.querySelectorAll('input[type=text], textarea')).map(function(i) {
+            t: Array.from(d.querySelectorAll('input[type=text], textarea')).map(function (i) {
               return { v: i.value, vis: i.style.display !== 'none' };
             }),
-            c: Array.from(d.querySelectorAll('input[type=checkbox]')).map(function(c) { return c.checked; }),
-            r: Array.from(d.querySelectorAll('.seg-toggle')).map(function(tog) {
+            c: Array.from(d.querySelectorAll('input[type=checkbox]')).map(function (c) { return c.checked; }),
+            r: Array.from(d.querySelectorAll('.seg-toggle')).map(function (tog) {
               var ch = tog.querySelector('input:checked');
               return ch ? ch.value : null;
             }),
-            m: Array.from(d.querySelectorAll('.msd')).map(function(msd) {
-              return Array.from(msd.querySelectorAll('input:checked')).map(function(i) { return i.value; });
+            m: Array.from(d.querySelectorAll('.msd')).map(function (msd) {
+              return Array.from(msd.querySelectorAll('input:checked')).map(function (i) { return i.value; });
             })
           };
         });
@@ -2537,8 +2692,8 @@
       if (hi[1]) hi[1].value = s.desc || '';
 
       var si = document.querySelectorAll('.section .frow .box');
-      if (si[0]) si[0].value = s.cov  || '';
-      if (si[1]) si[1].value = s.ins  || '';
+      if (si[0]) si[0].value = s.cov || '';
+      if (si[1]) si[1].value = s.ins || '';
       if (si[2]) si[2].value = s.insc || '';
 
       if (s.sc) {
@@ -2546,7 +2701,7 @@
         var scT = document.getElementById('sailclothRow').querySelectorAll('input[type=text]');
         if (scT[0]) scT[0].value = s.sc.s || '';
         var scM = document.getElementById('sailclothRow').querySelector('.msd');
-        if (scM) (s.sc.e || []).forEach(function(v) {
+        if (scM) (s.sc.e || []).forEach(function (v) {
           var inp = scM.querySelector('input[value="' + v + '"]');
           if (inp) { inp.checked = true; msdUpdate(inp); }
         });
@@ -2572,7 +2727,7 @@
           ? rows
           : (sec === 'ext' ? [{ cat: '', mat: [], decor: null, fn: '', fnArr: [] }] : []);
 
-        rowData.forEach(function(rd) {
+        rowData.forEach(function (rd) {
           addRow(sec);
           var tr = tb.lastElementChild;
 
@@ -2592,7 +2747,7 @@
             } else {
               // Old int: rd.t was the type multi-select (Liner/Panels/etc.) → now fnArr
               var fnMsd = tr.querySelector('td .msd');
-              if (fnMsd) (rd.t || []).forEach(function(v) {
+              if (fnMsd) (rd.t || []).forEach(function (v) {
                 var inp = fnMsd.querySelector('input[value="' + v + '"]');
                 if (inp) { inp.checked = true; msdUpdate(inp); }
               });
@@ -2611,8 +2766,8 @@
           }
 
           var matInputs = Array.from(tr.querySelectorAll('.material-inputs input[type=text]'))
-            .filter(function(i) { return i.style.display !== 'none'; });
-          (rd.mat || []).forEach(function(v, i) {
+            .filter(function (i) { return i.style.display !== 'none'; });
+          (rd.mat || []).forEach(function (v, i) {
             if (matInputs[i]) matInputs[i].value = v;
           });
 
@@ -2633,7 +2788,7 @@
             if (fnInput) fnInput.value = rd.fn || '';
           } else {
             var fnMsd = tr.querySelector('td .msd');
-            if (fnMsd) (rd.fnArr || []).forEach(function(v) {
+            if (fnMsd) (rd.fnArr || []).forEach(function (v) {
               var inp = fnMsd.querySelector('input[value="' + v + '"]');
               if (inp) { inp.checked = true; msdUpdate(inp); }
             });
@@ -2648,16 +2803,16 @@
       // fn cards already created by msdUpdate calls above; sync once more then populate values
       syncFunctionCards();
       var fnCardEls = Array.from(document.querySelectorAll('#fnCards .brow[data-fn]'));
-      (s.fnCards || []).forEach(function(entry, i) {
+      (s.fnCards || []).forEach(function (entry, i) {
         var card = fnCardEls[i];
         if (!card || card.dataset.fn !== entry.fn) return;
-        Object.keys(entry.data || {}).forEach(function(field) {
+        Object.keys(entry.data || {}).forEach(function (field) {
           var inp = card.querySelector('input[data-fn-field="' + field + '"]');
           if (inp) { inp.value = entry.data[field]; return; }
           var wrap = card.querySelector('.fn-msd-wrap[data-fn-field="' + field + '"]');
           if (wrap) {
             var vals = Array.isArray(entry.data[field]) ? entry.data[field] : [entry.data[field]];
-            vals.forEach(function(v) {
+            vals.forEach(function (v) {
               if (!v) return;
               var msdInp = wrap.querySelector('input[value="' + v + '"]');
               if (msdInp) { msdInp.checked = true; msdUpdate(msdInp); }
@@ -2667,26 +2822,26 @@
       });
 
       document.getElementById('bindingRows').innerHTML = '';
-      Object.keys(BINDING).forEach(function(k) { document.getElementById('badd-' + k).style.display = 'inline-block'; });
-      Object.keys(s.bind || {}).forEach(function(key) {
+      Object.keys(BINDING).forEach(function (k) { document.getElementById('badd-' + k).style.display = 'inline-block'; });
+      Object.keys(s.bind || {}).forEach(function (key) {
         if (!BINDING[key]) return;
         addBinding(key);
         var inputs = document.getElementById('brow-' + key).querySelectorAll('input[type=text], textarea');
-        (s.bind[key] || []).forEach(function(v, i) { if (inputs[i]) inputs[i].value = v; });
+        (s.bind[key] || []).forEach(function (v, i) { if (inputs[i]) inputs[i].value = v; });
       });
 
       document.getElementById('decorRows').innerHTML = '';
-      Object.keys(s.decor || {}).forEach(function(key) {
+      Object.keys(s.decor || {}).forEach(function (key) {
         if (!DECOR[key]) return;
         // Support old format (single object) and new format (array of objects)
         var instances = Array.isArray(s.decor[key]) ? s.decor[key] : [s.decor[key]];
-        instances.forEach(function(data) {
+        instances.forEach(function (data) {
           addDecor(key);
           var rows = document.querySelectorAll('.drow[data-key="' + key + '"]');
           var d = rows[rows.length - 1].querySelector('.dctrls');
 
           // Toggles first (they reveal conditional inputs)
-          Array.from(d.querySelectorAll('.seg-toggle')).forEach(function(tog, i) {
+          Array.from(d.querySelectorAll('.seg-toggle')).forEach(function (tog, i) {
             var val = (data.r || [])[i];
             if (val) {
               var radio = tog.querySelector('input[value="' + val + '"]');
@@ -2694,12 +2849,12 @@
             }
           });
           // Checkboxes
-          Array.from(d.querySelectorAll('input[type=checkbox]')).forEach(function(cb, i) {
+          Array.from(d.querySelectorAll('input[type=checkbox]')).forEach(function (cb, i) {
             var checked = (data.c || [])[i];
             if (checked) { cb.checked = true; if (cb.closest('.newex-field')) cfToggle(cb); }
           });
           // Text inputs and textareas
-          Array.from(d.querySelectorAll('input[type=text], textarea')).forEach(function(inp, i) {
+          Array.from(d.querySelectorAll('input[type=text], textarea')).forEach(function (inp, i) {
             var td = (data.t || [])[i];
             if (td) {
               inp.value = typeof td === 'object' ? (td.v || '') : td;
@@ -2707,8 +2862,8 @@
             }
           });
           // MSD dropdowns
-          Array.from(d.querySelectorAll('.msd')).forEach(function(msd, i) {
-            ((data.m || [])[i] || []).forEach(function(v) {
+          Array.from(d.querySelectorAll('.msd')).forEach(function (msd, i) {
+            ((data.m || [])[i] || []).forEach(function (v) {
               var inp = msd.querySelector('input[value="' + v + '"]');
               if (inp) { inp.checked = true; msdUpdate(inp); }
             });
@@ -2731,32 +2886,32 @@
       if (_pdfjsReady) { cb(); return; }
       var s = document.createElement('script');
       s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      s.onload = function() {
+      s.onload = function () {
         pdfjsLib.GlobalWorkerOptions.workerSrc =
           'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         _pdfjsReady = true;
         cb();
       };
-      s.onerror = function() {
+      s.onerror = function () {
         showToast('Could not load PDF reader — check your internet connection.');
       };
       document.head.appendChild(s);
     }
 
-    document.addEventListener('dragover', function(e) {
+    document.addEventListener('dragover', function (e) {
       if (e.dataTransfer.types && Array.from(e.dataTransfer.types).indexOf('Files') > -1) {
         e.preventDefault();
         document.getElementById('dropOverlay').style.display = 'flex';
       }
     });
 
-    document.addEventListener('dragleave', function(e) {
+    document.addEventListener('dragleave', function (e) {
       if (!e.relatedTarget || e.relatedTarget === document.documentElement) {
         document.getElementById('dropOverlay').style.display = 'none';
       }
     });
 
-    document.addEventListener('drop', function(e) {
+    document.addEventListener('drop', function (e) {
       e.preventDefault();
       document.getElementById('dropOverlay').style.display = 'none';
       var file = e.dataTransfer.files[0];
@@ -2764,23 +2919,23 @@
         showToast('Please drop a PDF generated by this tool.');
         return;
       }
-      ensurePdfJs(function() { loadFromPdf(file); });
+      ensurePdfJs(function () { loadFromPdf(file); });
     });
 
     function loadFromPdf(file) {
       var reader = new FileReader();
-      reader.onload = function(ev) {
+      reader.onload = function (ev) {
         pdfjsLib.getDocument({ data: new Uint8Array(ev.target.result) }).promise
-          .then(function(pdf) {
+          .then(function (pdf) {
             var nums = [];
             for (var i = 1; i <= pdf.numPages; i++) nums.push(i);
-            return Promise.all(nums.map(function(n) {
-              return pdf.getPage(n).then(function(p) { return p.getTextContent(); });
+            return Promise.all(nums.map(function (n) {
+              return pdf.getPage(n).then(function (p) { return p.getTextContent(); });
             }));
           })
-          .then(function(pages) {
+          .then(function (pages) {
             var full = pages
-              .flatMap(function(p) { return p.items.map(function(it) { return it.str; }); })
+              .flatMap(function (p) { return p.items.map(function (it) { return it.str; }); })
               .join('');
             var m = full.match(/%%CS%%([\s\S]+?)%%CS%%/);
             if (!m) { showToast('No configuration data found. Was this PDF made with this tool?'); return; }
@@ -2789,11 +2944,11 @@
               var state = JSON.parse(json);
               restoreFormState(state);
               showToast('Loaded v' + state.pv + ' · ' + state.d);
-            } catch(err) {
+            } catch (err) {
               showToast('Could not read configuration data — PDF may be corrupted.');
             }
           })
-          .catch(function() { showToast('Could not parse this PDF.'); });
+          .catch(function () { showToast('Could not parse this PDF.'); });
       };
       reader.readAsArrayBuffer(file);
     }
@@ -2803,7 +2958,7 @@
     var _origPrint = window.print.bind(window);
 
     function doSave() {
-      runPrintValidation(function() {
+      runPrintValidation(function () {
         var state = captureFormState();
 
         var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
@@ -2828,7 +2983,48 @@
     // Override window.print so any third-party triggers also go through doSave
     window.print = doSave;
 
-    document.addEventListener('keydown', function(e) {
+    // ============================================================
+    //  ACCENT COLOR PICKER
+    // ============================================================
+    (function () {
+      var STORAGE_KEY = 'mcs_accent_color';
+      var picker = document.getElementById('accentPicker');
+      var swatch = document.getElementById('accentSwatch');
+
+      // Find the top-level :root rule in the page stylesheet
+      var rootRule = (function () {
+        var rules = document.styleSheets[0].cssRules;
+        for (var i = 0; i < rules.length; i++) {
+          if (rules[i].selectorText === ':root') return rules[i];
+        }
+      })();
+
+      function luminance(hex) {
+        var c = [hex.slice(1,3), hex.slice(3,5), hex.slice(5,7)].map(function (h) {
+          var v = parseInt(h, 16) / 255;
+          return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+      }
+
+      function applyAccent(color) {
+        rootRule.style.setProperty('--accent', color);
+        rootRule.style.setProperty('--on-accent', luminance(color) > 0.4 ? '#262626' : '#fff');
+        swatch.style.background = color;
+        picker.value = color;
+      }
+
+      // Restore saved color on load
+      var saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) applyAccent(saved);
+
+      picker.addEventListener('input', function () {
+        applyAccent(picker.value);
+        localStorage.setItem(STORAGE_KEY, picker.value);
+      });
+    })();
+
+    document.addEventListener('keydown', function (e) {
       if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
         e.preventDefault();
         doSave();
