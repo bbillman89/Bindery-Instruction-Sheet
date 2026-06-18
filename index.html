@@ -205,7 +205,9 @@
      HEADER BLOCK  (Job Number / Description / Property / Designer)
      ============================================================ */
     .header-panel {
-      background: var(--surface);
+      background: color-mix(in srgb, var(--accent), transparent 80%);
+      border: solid 1px var(--accent);
+      border-radius: 4px;
       padding: 14px 16px;
       display: flex;
       gap: 16px;
@@ -654,6 +656,12 @@
       flex-direction: column;
       gap: 4px;
       width: 100%;
+    }
+
+    .cond-input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     /* ============================================================
@@ -1267,7 +1275,9 @@
         print-color-adjust: exact !important;
         padding-top: 0;
       }
-
+      .header-panel{
+        padding: 14px 0;
+      }
       .title {
         padding-bottom: 0;
         color: var(--ink);     /* --accent is #fff in print; prevent white-on-white */
@@ -1348,33 +1358,16 @@
         border-color: #d0d0d0;
       }
 
-      .seg-toggle {
-        border: none;
-        height: auto;
-        overflow: visible;
-      }
 
       .seg-toggle input[type=radio] {
         display: none;
       }
 
       .seg-toggle input:not(:checked)+label {
-        display: none;
+        opacity: 20%;
       }
 
-      .seg-toggle input:checked+label {
-        background: transparent;
-        color: var(--ink);
-        padding: 0;
-        border: none;
-      }
-
-      .seg-toggle:not(:has(input:checked))::after {
-        content: "New/Existing not defined";
-        font-size: 11px;
-        color: #999;
-        font-style: italic;
-      }
+      
 
       .msd-btn {
         background-color: transparent;
@@ -1492,31 +1485,36 @@
       <!-- ===== SECTION 1: HEADER / JOB INFO (static, fillable) ===== -->
       <div class="header-panel">
         <div class="input-wrap">
-          <span class="lab">Management Group:</span>
+          <span class="lab">Management Group</span>
           <input type="text" class="box grow">
         </div>
         <div class="input-wrap">
-          <span class="lab">Property Name:</span>
+          <span class="lab">Property Name</span>
           <input type="text" class="box grow">
         </div>
         <div class="input-wrap">
-          <span class="lab">Job Description:</span>
+          <span class="lab">Job Description</span>
           <input type="text" class="box grow">
         </div>
       </div>
 
       <!-- ===== SECTION 2: SIZE SPECS (static, fillable) ===== -->
       <div class="band">Size Specs</div>
-      <div class="section">
-        <div class="frow">
-          <span class="lab">Cover Size:</span>
-          <input type="text" class="box md">
-          <span class="lab">Insert Size:</span>
-          <input type="text" class="box md">
-          <span class="lab">Insert Count:</span>
-          <input type="text" class="box sm">
+      <div class="section" id="sizeSpecsSection">
+        <div style="display:flex; gap:16px;">
+          <div class="input-wrap">
+            <span class="lab">Cover Size</span>
+            <input type="text" class="box">
+          </div>
+          <div class="input-wrap">
+            <span class="lab">Insert Size</span>
+            <input type="text" class="box">
+          </div>
+          <div class="input-wrap">
+            <span class="lab">Insert Count</span>
+            <input type="text" class="box">
+          </div>
         </div>
-
       </div>
 
       <!-- ===== SECTION 3: MATERIAL (dynamic, fillable) ===== -->
@@ -1665,6 +1663,10 @@
   </div>
 
   <!-- Ext Function autocomplete options -->
+  <datalist id="tipu-mat-list"></datalist>
+  <datalist id="dl-corner-tab"><option value="Regular Black"></datalist>
+  <datalist id="dl-board"><option value="Black Lexide"></datalist>
+
   <datalist id="dl-ext-function">
     <option value="Full Wrap">
     <option value="Front Cover">
@@ -1827,12 +1829,27 @@
         msd.querySelector('.msd-panel').style.display = 'none';
       });
     }
+    function refreshTipuMatList() {
+      var dl = document.getElementById('tipu-mat-list');
+      if (!dl) return;
+      var seen = {};
+      var opts = '';
+      document.querySelectorAll('.mat-print').forEach(function (span) {
+        var val = span.textContent.trim();
+        if (val && !seen[val]) {
+          seen[val] = true;
+          opts += '<option value="' + val.replace(/"/g, '&quot;') + '">';
+        }
+      });
+      dl.innerHTML = opts;
+    }
     function tipuChange(radio) {
       var field = radio.closest('.newex-field');
-      var inp = field.querySelector('.tipu-mat');
-      inp.placeholder = radio.value === 'Tip-In' ? 'Tip-In Material' : 'Underlay Material';
-      inp.style.display = '';
-      inp.value = '';
+      var wrap = field.querySelector('.cond-input-wrap');
+      wrap.querySelector('.tipu-lab').textContent = radio.value === 'Tip-In' ? 'Tip-In Material' : 'Underlay Material';
+      wrap.style.display = '';
+      wrap.querySelector('input').value = '';
+      refreshTipuMatList();
     }
     function cfToggle(cb) {
       var field = cb.closest('.newex-field');
@@ -1843,11 +1860,11 @@
     function newexChange(radio) {
       var field = radio.closest('.newex-field');
       if (!field) return;
-      var job = field.querySelector('.newex-job');
-      if (job) {
+      var wrap = field.querySelector('.cond-input-wrap');
+      if (wrap) {
         var show = radio.dataset.cond === 'true';
-        job.style.display = show ? '' : 'none';
-        if (!show) job.value = '';
+        wrap.style.display = show ? '' : 'none';
+        if (!show) wrap.querySelector('input').value = '';
       }
     }
     document.addEventListener('click', function (e) {
@@ -2118,8 +2135,8 @@
       container.appendChild(el);
     }
     var BINDING = {
-      corners: { label: "Corners", fields: ["Corners", "Board"] },
-      tabs: { label: "Tabs", fields: ["Tabs", "Board"] },
+      corners: { label: "Corners", fields: [{ l: "Corners", ac: "dl-corner-tab" }, { l: "Board", ac: "dl-board" }] },
+      tabs: { label: "Tabs", fields: [{ l: "Tabs", ac: "dl-corner-tab" }, { l: "Board", ac: "dl-board" }] },
       cord: { label: "Menu Cord", fields: ["Cord", "Eyelets"] },
       ring: { label: "Ring Binder", fields: ["Size / Color"] },
       screw: { label: "Screwposts", fields: ["Size / Color", "Distance Apart", "Application"] },
@@ -2136,8 +2153,12 @@
       var html = '<span class="btype">' + cfg.label + '</span>';
       cfg.fields.forEach(function (f) {
         if (f === null) { html += '<div class="card-field"><textarea class="notebox" style="width:100%;min-height:60px;"></textarea></div>'; }
-        else if (f) { html += '<div class="card-field"><span class="lab">' + f + '</span><input type="text" class="box"></div>'; }
-        else { html += '<div class="card-field"><input type="text" class="box"></div>'; }
+        else {
+          var label = typeof f === 'object' ? f.l : f;
+          var acAttr = (typeof f === 'object' && f.ac) ? ' list="' + f.ac + '"' : '';
+          if (label) { html += '<div class="card-field"><span class="lab">' + label + '</span><input type="text" class="box"' + acAttr + '></div>'; }
+          else { html += '<div class="card-field"><input type="text" class="box"' + acAttr + '></div>'; }
+        }
       });
       html += '<button class="rm" title="Remove" onclick="removeBinding(\'' + key + '\')">&times;</button>';
       row.innerHTML = html;
@@ -2155,13 +2176,13 @@
           { k: 'f', l: 'Location', w: 'md' },
           { k: 'newex', jobNum: true },
           { k: 'newex', opt1: 'Blind', opt2: 'Foil', condPh: 'Foil Color' },
-          { k: 'msd', l: 'No Die Type Selected', opts: ['Brass', 'Magnesium', 'River City'], single: true }
+          { k: 'msd', label: 'Die Type', l: 'No Die Type Selected', opts: ['Brass', 'Magnesium', 'River City'], single: true }
         ]
       },
       laser: {
         label: "Laser-Cut / Engrave", items: [
           { k: 'f', l: 'Location', w: 'md' },
-          { k: 'newex', opt1: 'Engrave', opt2: 'Laser-Cut', condPh: 'Underlay' }
+          { k: 'newex', opt1: 'Engrave', opt2: 'Laser-Cut', condPh: 'Underlay', matAc: true }
         ]
       },
       colorprint: {
@@ -2178,7 +2199,7 @@
       diecut: {
         label: "Diecut / Window", items: [
           { k: 'f', l: 'Location', w: 'md' },
-          { k: 'newex' },
+          { k: 'newex', jobNum: true },
           { k: 'f', l: 'Size', w: 'sm' },
           { k: 'tipu' }
         ]
@@ -2207,7 +2228,7 @@
             '<input type="radio" name="' + rname + '" id="' + rname + '-1" value="Underlay" onchange="tipuChange(this)">' +
             '<label for="' + rname + '-1">Underlay</label>' +
             '</div>' +
-            '<input type="text" class="box tipu-mat" placeholder="" style="display:none;">' +
+            '<div class="cond-input-wrap" style="display:none;"><span class="lab tipu-lab"></span><input type="text" class="box tipu-mat" list="tipu-mat-list"></div>' +
             '</div>';
         }
         else if (it.k === 'cf') {
@@ -2219,7 +2240,7 @@
         else if (it.k === 'br') { /* no-op in column layout */ }
         else if (it.k === 'grow') { ctrls += '<div class="card-field"><input type="text" class="box"></div>'; }
         else if (it.k === 'ta') { ctrls += '<div class="card-field">' + (it.l ? '<span class="lab">' + it.l + '</span>' : '') + '<textarea class="notebox" style="width:100%;min-height:60px;"></textarea></div>'; }
-        else if (it.k === 'msd') { ctrls += msdHtml(it.l, it.opts, it.single); }
+        else if (it.k === 'msd') { ctrls += '<div class="card-field">' + (it.label ? '<span class="lab">' + it.label + '</span>' : '') + msdHtml(it.l, it.opts, it.single) + '</div>'; }
         else if (it.k === 'newex') {
           var opt1 = it.opt1 || 'New';
           var opt2 = it.opt2 || 'Existing';
@@ -2228,7 +2249,7 @@
           var hasCond = it.jobNum || !!it.condPh;
           var condPh = it.condPh || 'Job #';
           var condInput = hasCond
-            ? '<input type="text" class="box newex-job" placeholder="' + condPh + '" style="display:none;">'
+            ? '<div class="cond-input-wrap" style="display:none;"><span class="lab">' + condPh + '</span><input type="text" class="box newex-job"' + (it.matAc ? ' list="tipu-mat-list"' : '') + '></div>'
             : '';
           ctrls += '<div class="card-field newex-field">' +
             '<div class="seg-toggle">' +
@@ -2244,6 +2265,9 @@
         '<button class="rm" title="Remove" onclick="removeDrow(\'' + uid + '\')">&times;</button>';
       insertOrdered('decorRows', row, key, DECOR_ORDER);
       renumberDecor(key);
+      row.querySelectorAll('input[list="tipu-mat-list"]').forEach(function (inp) {
+        inp.addEventListener('focus', refreshTipuMatList);
+      });
       // Add buttons are never hidden — multiple instances per type are allowed
     }
     function renumberDecor(key) {
@@ -2504,7 +2528,9 @@
           var d = card.querySelector('.dctrls');
           // Visible text inputs and textareas
           d.querySelectorAll('input[type=text], textarea').forEach(function (inp) {
-            if (inp.style.display !== 'none' && !inp.value.trim()) hasIssue = true;
+            var wrap = inp.closest('.cond-input-wrap');
+            var hidden = wrap ? wrap.style.display === 'none' : inp.style.display === 'none';
+            if (!hidden && !inp.value.trim()) hasIssue = true;
           });
           // Seg-toggles: one must be selected
           d.querySelectorAll('.seg-toggle').forEach(function (tog) {
@@ -2579,7 +2605,7 @@
 
       // ── Soft warning: key fields ──────────────────────────────────
 
-      var sizeInputs = document.querySelectorAll('.section .frow .box');
+      var sizeInputs = document.querySelectorAll('#sizeSpecsSection .box');
       var keyFields = [
         { label: 'Management Group', el: document.querySelectorAll('.header-panel .box')[0] },
         { label: 'Property Name', el: document.querySelectorAll('.header-panel .box')[1] },
@@ -2618,7 +2644,7 @@
       s.prop = hi[1] ? hi[1].value : '';
       s.desc = hi[2] ? hi[2].value : '';
 
-      var si = document.querySelectorAll('.section .frow .box');
+      var si = document.querySelectorAll('#sizeSpecsSection .box');
       s.cov = si[0] ? si[0].value : '';
       s.ins = si[1] ? si[1].value : '';
       s.insc = si[2] ? si[2].value : '';
@@ -2695,7 +2721,8 @@
           var d = row.querySelector('.dctrls');
           return {
             t: Array.from(d.querySelectorAll('input[type=text], textarea')).map(function (i) {
-              return { v: i.value, vis: i.style.display !== 'none' };
+              var wrap = i.closest('.cond-input-wrap');
+              return { v: i.value, vis: wrap ? wrap.style.display !== 'none' : i.style.display !== 'none' };
             }),
             c: Array.from(d.querySelectorAll('input[type=checkbox]')).map(function (c) { return c.checked; }),
             r: Array.from(d.querySelectorAll('.seg-toggle')).map(function (tog) {
@@ -2737,7 +2764,7 @@
       if (hi[1]) hi[1].value = s.prop || '';
       if (hi[2]) hi[2].value = s.desc || '';
 
-      var si = document.querySelectorAll('.section .frow .box');
+      var si = document.querySelectorAll('#sizeSpecsSection .box');
       if (si[0]) si[0].value = s.cov || '';
       if (si[1]) si[1].value = s.ins || '';
       if (si[2]) si[2].value = s.insc || '';
@@ -2907,7 +2934,11 @@
             var td = (data.t || [])[i];
             if (td) {
               inp.value = typeof td === 'object' ? (td.v || '') : td;
-              if (typeof td === 'object') inp.style.display = td.vis === false ? 'none' : '';
+              if (typeof td === 'object') {
+                var wrap = inp.closest('.cond-input-wrap');
+                if (wrap) wrap.style.display = td.vis === false ? 'none' : '';
+                else inp.style.display = td.vis === false ? 'none' : '';
+              }
             }
           });
           // MSD dropdowns
