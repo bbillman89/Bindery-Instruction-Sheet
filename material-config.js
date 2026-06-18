@@ -32,7 +32,8 @@ var MATERIAL_CONFIG = {
     'Panels',
     'Pockets',
     'CC Slot',
-    'Pen Loop'
+    'Pen Loop', 
+    'Other'
   ],
 
   /* ─── CATEGORY LIST ──────────────────────────────────────────────
@@ -41,7 +42,6 @@ var MATERIAL_CONFIG = {
   ─────────────────────────────────────────────────────────────────── */
   categories: [
     'Bookcloth',
-    'Linen/Paper',
     'Wood',
     'Rockboard',
     'Metal',
@@ -267,7 +267,7 @@ var MATERIAL_CONFIG = {
         return [v.type, v.finish].filter(Boolean).join(' / ');
       },
       inputs: [
-        { id: 'type',   placeholder: 'Type',  autocomplete: ['Holliston']  },
+        { id: 'type',   placeholder: 'Type'  },
         { id: 'finish', placeholder: 'Finish' },
       ]
     },

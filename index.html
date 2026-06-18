@@ -1492,6 +1492,10 @@
       <!-- ===== SECTION 1: HEADER / JOB INFO (static, fillable) ===== -->
       <div class="header-panel">
         <div class="input-wrap">
+          <span class="lab">Management Group:</span>
+          <input type="text" class="box grow">
+        </div>
+        <div class="input-wrap">
           <span class="lab">Property Name:</span>
           <input type="text" class="box grow">
         </div>
@@ -1822,6 +1826,13 @@
         msd.querySelector('.msd-val').textContent = msd.dataset.placeholder;
         msd.querySelector('.msd-panel').style.display = 'none';
       });
+    }
+    function tipuChange(radio) {
+      var field = radio.closest('.newex-field');
+      var inp = field.querySelector('.tipu-mat');
+      inp.placeholder = radio.value === 'Tip-In' ? 'Tip-In Material' : 'Underlay Material';
+      inp.style.display = '';
+      inp.value = '';
     }
     function cfToggle(cb) {
       var field = cb.closest('.newex-field');
@@ -2169,7 +2180,7 @@
           { k: 'f', l: 'Location', w: 'md' },
           { k: 'newex' },
           { k: 'f', l: 'Size', w: 'sm' },
-          { k: 'c', l: 'Tip-In' }, { k: 'cf', l: 'Underlay', ph: 'Material' }
+          { k: 'tipu' }
         ]
       },
       other: { label: "Other", items: [{ k: 'ta' }] }
@@ -2187,6 +2198,18 @@
       cfg.items.forEach(function (it) {
         if (it.k === 'f') { ctrls += '<div class="card-field"><span class="lab">' + it.l + '</span><input type="text" class="box"></div>'; }
         else if (it.k === 'c') { ctrls += '<label class="copt"><input type="checkbox">' + it.l + '</label>'; }
+        else if (it.k === 'tipu') {
+          var rname = uid + '-tipu';
+          ctrls += '<div class="card-field newex-field">' +
+            '<div class="seg-toggle" data-tipu="true">' +
+            '<input type="radio" name="' + rname + '" id="' + rname + '-0" value="Tip-In" onchange="tipuChange(this)">' +
+            '<label for="' + rname + '-0">Tip-In</label>' +
+            '<input type="radio" name="' + rname + '" id="' + rname + '-1" value="Underlay" onchange="tipuChange(this)">' +
+            '<label for="' + rname + '-1">Underlay</label>' +
+            '</div>' +
+            '<input type="text" class="box tipu-mat" placeholder="" style="display:none;">' +
+            '</div>';
+        }
         else if (it.k === 'cf') {
           ctrls += '<div class="card-field newex-field">' +
             '<label class="copt"><input type="checkbox" onchange="cfToggle(this)">' + it.l + '</label>' +
@@ -2558,8 +2581,9 @@
 
       var sizeInputs = document.querySelectorAll('.section .frow .box');
       var keyFields = [
-        { label: 'Property Name', el: document.querySelectorAll('.header-panel .box')[0] },
-        { label: 'Job Description', el: document.querySelectorAll('.header-panel .box')[1] },
+        { label: 'Management Group', el: document.querySelectorAll('.header-panel .box')[0] },
+        { label: 'Property Name', el: document.querySelectorAll('.header-panel .box')[1] },
+        { label: 'Job Description', el: document.querySelectorAll('.header-panel .box')[2] },
         { label: 'Cover Size', el: sizeInputs[0] },
         { label: 'Insert Size', el: sizeInputs[1] },
         { label: 'Insert Count', el: sizeInputs[2] }
@@ -2590,8 +2614,9 @@
       s.job = ti[1] ? ti[1].value : '';
 
       var hi = document.querySelectorAll('.header-panel .box');
-      s.prop = hi[0] ? hi[0].value : '';
-      s.desc = hi[1] ? hi[1].value : '';
+      s.mgmt = hi[0] ? hi[0].value : '';
+      s.prop = hi[1] ? hi[1].value : '';
+      s.desc = hi[2] ? hi[2].value : '';
 
       var si = document.querySelectorAll('.section .frow .box');
       s.cov = si[0] ? si[0].value : '';
@@ -2708,8 +2733,9 @@
       if (ti[1]) ti[1].value = s.job || '';
 
       var hi = document.querySelectorAll('.header-panel .box');
-      if (hi[0]) hi[0].value = s.prop || '';
-      if (hi[1]) hi[1].value = s.desc || '';
+      if (hi[0]) hi[0].value = s.mgmt || '';
+      if (hi[1]) hi[1].value = s.prop || '';
+      if (hi[2]) hi[2].value = s.desc || '';
 
       var si = document.querySelectorAll('.section .frow .box');
       if (si[0]) si[0].value = s.cov || '';
@@ -2865,7 +2891,10 @@
             var val = (data.r || [])[i];
             if (val) {
               var radio = tog.querySelector('input[value="' + val + '"]');
-              if (radio) { radio.checked = true; newexChange(radio); }
+              if (radio) {
+                radio.checked = true;
+                tog.dataset.tipu ? tipuChange(radio) : newexChange(radio);
+              }
             }
           });
           // Checkboxes
