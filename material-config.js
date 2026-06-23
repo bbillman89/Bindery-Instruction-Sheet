@@ -149,6 +149,7 @@ var MATERIAL_CONFIG = {
             'CMRB RedTrexx',
             'CMRB Scworill',
             'CMRB Slate',
+            'CMRB Snow Owl',
             'CMRB Stainless',
             'CMRB Storm',
             'CMRB Tan',
